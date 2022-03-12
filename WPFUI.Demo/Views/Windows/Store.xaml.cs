@@ -12,16 +12,19 @@ namespace WPFUI.Demo.Views.Windows
     /// </summary>
     public partial class Store : Window
     {
-        public Store()
+        public Store(StoreNavigation storeNavigation)
         {
             WPFUI.Background.Manager.Apply(this);
-
             InitializeComponent();
+
+            _storeNavigation = storeNavigation;
+
+            RootNavigation.Content = storeNavigation;
+            Breadcrumb.Navigation = storeNavigation;
+
+            storeNavigation.AddFrame(RootFrame);
         }
 
-        private void RootNavigation_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            RootNavigation.Navigate("dashboard");
-        }
+        private readonly StoreNavigation _storeNavigation;
     }
 }

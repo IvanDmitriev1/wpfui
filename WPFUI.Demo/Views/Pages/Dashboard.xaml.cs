@@ -3,9 +3,11 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using WPFUI.Controls.Interfaces;
+using WPFUI.DIControls;
+using WPFUI.DIControls.Interfaces;
 
 namespace WPFUI.Demo.Views.Pages
 {
@@ -14,27 +16,31 @@ namespace WPFUI.Demo.Views.Pages
     /// </summary>
     public partial class Dashboard : Page, INavigable
     {
-        public Dashboard()
+        public Dashboard(DefaultNavigation navigation)
         {
             InitializeComponent();
+
+            _navigation = navigation;
         }
 
+        private readonly INavigation _navigation;
+
         private void ActionCardIcons_Click(object sender, RoutedEventArgs e)
-        {
-            (Application.Current.MainWindow as Container)?.RootNavigation.Navigate("icons");
+        {        
+            _navigation.NavigateTo(nameof(Icons));
         }
 
         private void ActionCardColors_Click(object sender, RoutedEventArgs e)
         {
-            (Application.Current.MainWindow as Container)?.RootNavigation.Navigate("colors");
+            _navigation.NavigateTo(nameof(Colors));
         }
 
         private void ActionCardControls_Click(object sender, RoutedEventArgs e)
         {
-            (Application.Current.MainWindow as Container)?.RootNavigation.Navigate("controls");
+            _navigation.NavigateTo(nameof(Controls));
         }
 
-        public void OnNavigationRequest(INavigation sender, object current)
+        public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[] ars)
         {
             System.Diagnostics.Debug.WriteLine("Navigated to dashboard");
         }

@@ -5,7 +5,11 @@
     All Rights Reserved.
 -->
 
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:diControls="clr-namespace:WPFUI.DIControls"
+    xmlns:diControlsStyles="clr-namespace:WPFUI.Styles.DIControls">
 
     <ResourceDictionary.MergedDictionaries>
 
@@ -73,6 +77,29 @@
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/Expander.xaml" />
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/ProgressBar.xaml" />
 
+
+        <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/DIControls/Breadcrumb.xaml" />
+
     </ResourceDictionary.MergedDictionaries>
+
+    <DataTemplate DataType="{x:Type diControls:Dialog}">
+        <diControlsStyles:Dialog />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type diControls:Snackbar}">
+        <diControlsStyles:Snackbar />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type diControls:DefaultNavigation}">
+        <diControlsStyles:DefaultNavigation />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type diControls:DefaultNavigationItem}">
+        <diControlsStyles:DefaultNavigationItem />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type diControls:StoreNavigationItem}">
+        <diControlsStyles:StoreNavigationItem />
+    </DataTemplate>
 
 </ResourceDictionary>

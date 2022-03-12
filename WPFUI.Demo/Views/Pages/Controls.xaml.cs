@@ -5,102 +5,112 @@
 
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
-using WPFUI.Controls;
+using WPFUI.Common;
+using WPFUI.DIControls;
 
-namespace WPFUI.Demo.Views.Pages
+namespace WPFUI.Demo.Views.Pages;
+
+public enum OrderStatus
 {
-    public enum OrderStatus
+    None,
+    New,
+    Processing,
+    Shipped,
+    Received
+};
+
+/// <summary>
+/// Interaction logic for Controls.xaml
+/// </summary>
+public partial class Controls : Page
+{
+    private readonly Dialog _dialog;
+    private readonly Snackbar _snackbar;
+
+    public class Customer
     {
-        None,
-        New,
-        Processing,
-        Shipped,
-        Received
-    };
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public bool IsMember { get; set; }
+        public OrderStatus Status { get; set; }
+    }
 
-    /// <summary>
-    /// Interaction logic for Controls.xaml
-    /// </summary>
-    public partial class Controls : Page
+    public ObservableCollection<string> ListBoxItemCollection { get; set; }
+
+    public ObservableCollection<Customer> DataGridItemCollection { get; set; }
+
+    public Controls(Dialog dialog, Snackbar snackbar)
     {
-        public class Customer
+        _dialog = dialog;
+        _snackbar = snackbar;
+
+        InitializeComponent();
+
+        ListBoxItemCollection = new ObservableCollection<string>()
         {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Email { get; set; }
-            public bool IsMember { get; set; }
-            public OrderStatus Status { get; set; }
-        }
+            "Somewhere over the rainbow",
+            "Way up high",
+            "And the dreams that you dream of",
+            "Once in a lullaby, oh"
+        };
 
-        public ObservableCollection<string> ListBoxItemCollection { get; set; }
-
-        public ObservableCollection<Customer> DataGridItemCollection { get; set; }
-
-        public Controls()
+        DataGridItemCollection = new ObservableCollection<Customer>()
         {
-            InitializeComponent();
-
-            ListBoxItemCollection = new ObservableCollection<string>()
+            new()
             {
-                "Somewhere over the rainbow",
-                "Way up high",
-                "And the dreams that you dream of",
-                "Once in a lullaby, oh"
-            };
-
-            DataGridItemCollection = new ObservableCollection<Customer>()
+                Email = "john.doe@example.com", FirstName = "John", LastName = "Doe", IsMember = true,
+                Status = OrderStatus.Processing
+            },
+            new()
             {
-                new()
-                {
-                    Email = "john.doe@example.com", FirstName = "John", LastName = "Doe", IsMember = true,
-                    Status = OrderStatus.Processing
-                },
-                new()
-                {
-                    Email = "chloe.clarkson@example.com", FirstName = "Chloe", LastName = "Clarkson", IsMember = true,
-                    Status = OrderStatus.Processing
-                },
-                new()
-                {
-                    Email = "eric.brown@example.com", FirstName = "Eric", LastName = "Brown", IsMember = false,
-                    Status = OrderStatus.New
-                }
-            };
+                Email = "chloe.clarkson@example.com", FirstName = "Chloe", LastName = "Clarkson", IsMember = true,
+                Status = OrderStatus.Processing
+            },
+            new()
+            {
+                Email = "eric.brown@example.com", FirstName = "Eric", LastName = "Brown", IsMember = false,
+                Status = OrderStatus.New
+            }
+        };
 
-            DataContext = this;
-        }
+        DataContext = this;
+    }
 
-        private void Button_ShowDialog_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            (((Container)System.Windows.Application.Current.MainWindow)!).RootDialog.Show = true;
-        }
+    private async void Button_ShowDialog_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        await _dialog.ShowDialog("What is it like to be a scribe? Is it good? In my opinion it's not about being good or not good. If I were to say what I esteem the most in life, I would say - people. People, who gave me a helping hand when I was a mess, when I was alone. And what's interesting, the chance meetings are the ones that influence our lives. The point is that when you profess certain values, even those seemingly universal, you may not find any understanding which, let me say, which helps us to develop. I had luck, let me say, because I found it. And I'd like to thank life. I'd like to thank it - life is singing, life is dancing, life is love. Many people ask me the same question, but how do you do that? where does all your happiness come from? And i replay that it's easy, it's cherishing live, that's what makes me build machines today, and tomorrow... who knows, why not, i would dedicate myself to do some community working and i would be, wham, not least... planting .... i mean... carrots", "WPF UI");
 
-        private void Button_ShowSnackbar_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            (((Container)System.Windows.Application.Current.MainWindow)!).RootSnackbar.Expand();
-        }
+        //(((Container)System.Windows.Application.Current.MainWindow)!).RootDialog.Show = true;
+    }
 
-        private void Button_ShowBox_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            MessageBox messageBox = new WPFUI.Controls.MessageBox();
+    private void Button_ShowSnackbar_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        _snackbar.Expand("Remember that the Heat Death of Universe is coming someday, no time to explain - let's go!", "WPF UI", Icon.PuzzlePiece24, 2000);
 
-            messageBox.ButtonLeftName = "Hello World";
-            messageBox.ButtonRightName = "Just close me";
+        //(((Container)System.Windows.Application.Current.MainWindow)!).RootSnackbar.Expand();
+    }
 
-            messageBox.ButtonLeftClick += MessageBox_LeftButtonClick;
-            messageBox.ButtonRightClick += MessageBox_RightButtonClick;
+    private void Button_ShowBox_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        WPFUI.Controls.MessageBox messageBox = new WPFUI.Controls.MessageBox();
 
-            messageBox.Show("Something weird", "May happen");
-        }
+        messageBox.ButtonLeftName = "Hello World";
+        messageBox.ButtonRightName = "Just close me";
 
-        private void MessageBox_LeftButtonClick(object sender, System.Windows.RoutedEventArgs e)
-        {
-            (sender as MessageBox)?.Close();
-        }
+        messageBox.ButtonLeftClick += MessageBox_LeftButtonClick;
+        messageBox.ButtonRightClick += MessageBox_RightButtonClick;
 
-        private void MessageBox_RightButtonClick(object sender, System.Windows.RoutedEventArgs e)
-        {
-            (sender as MessageBox)?.Close();
-        }
+        messageBox.Show("Something weird", "May happen");
+    }
+
+    private static void MessageBox_LeftButtonClick(object sender, System.Windows.RoutedEventArgs e)
+    {
+        (sender as WPFUI.Controls.MessageBox)?.Close();
+    }
+
+    private static void MessageBox_RightButtonClick(object sender, System.Windows.RoutedEventArgs e)
+    {
+        (sender as WPFUI.Controls.MessageBox)?.Close();
     }
 }

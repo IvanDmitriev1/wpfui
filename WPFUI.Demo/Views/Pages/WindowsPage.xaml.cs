@@ -3,44 +3,50 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using System;
 using System.Windows.Controls;
-using WPFUI.Controls.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using WPFUI.Demo.Views.Windows;
+using WPFUI.DIControls.Interfaces;
 
-namespace WPFUI.Demo.Views.Pages
+namespace WPFUI.Demo.Views.Pages;
+
+/// <summary>
+/// Interaction logic for WindowsPage.xaml
+/// </summary>
+public partial class WindowsPage : Page, INavigable
 {
-    /// <summary>
-    /// Interaction logic for WindowsPage.xaml
-    /// </summary>
-    public partial class WindowsPage : Page, INavigable
+    private readonly IServiceProvider _serviceProvider;
+
+    public WindowsPage(IServiceProvider serviceProvider)
     {
-        public WindowsPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
 
-        private void CardStore_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            new Windows.Store().Show();
-        }
+        _serviceProvider = serviceProvider;
+    }
 
-        private void CardXbox_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            new Windows.Xbox().Show();
-        }
+    private void CardStore_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        _serviceProvider.GetRequiredService<Store>().Show();
+    }
 
-        private void CardEditor_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            new Windows.Editor().Show();
-        }
+    private void CardXbox_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        _serviceProvider.GetRequiredService<Xbox>().Show();
+    }
 
-        private void CardBackdrop_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            new Windows.Backdrop().Show();
-        }
+    private void CardEditor_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        _serviceProvider.GetRequiredService<Editor>().Show();
+    }
 
-        public void OnNavigationRequest(INavigation sender, object current)
-        {
-            System.Diagnostics.Debug.WriteLine("Page with window selectors loaded.");
-        }
+    private void CardBackdrop_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        _serviceProvider.GetRequiredService<Backdrop>().Show();
+    }
+
+    public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[] ars)
+    {
+        System.Diagnostics.Debug.WriteLine("Page with window selectors loaded.");
     }
 }

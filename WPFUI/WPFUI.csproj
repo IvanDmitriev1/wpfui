@@ -36,6 +36,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="7.1.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Fonts\FiraCode-Regular.ttf" />
     <Resource Include="Fonts\FluentSystemIcons-Filled.ttf" />
     <Resource Include="Fonts\FluentSystemIcons-Regular.ttf" />

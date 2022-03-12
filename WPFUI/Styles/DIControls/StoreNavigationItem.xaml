@@ -1,0 +1,210 @@
+﻿<UserControl
+    x:Class="WPFUI.Styles.DIControls.StoreNavigationItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:WPFUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:diControls="clr-namespace:WPFUI.DIControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance diControls:DefaultNavigationItem}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Button Command="{Binding OnClickCommand}">
+        <Button.Style>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Width" Value="60" />
+                <Setter Property="Height" Value="60" />
+                <Setter Property="Margin" Value="0,0,0,4" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <SolidColorBrush Color="{DynamicResource ControlFillColorDefault}" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Foreground">
+                    <Setter.Value>
+                        <SolidColorBrush Color="{DynamicResource TextFillColorSecondary}" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="BorderBrush">
+                    <Setter.Value>
+                        <SolidColorBrush Opacity="0.0" Color="{DynamicResource ControlStrokeColorDefault}" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="OverridesDefaultStyle" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border
+                                x:Name="MainBorder"
+                                Padding="4"
+                                HorizontalAlignment="Stretch"
+                                Background="Transparent"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <Grid>
+                                    <Border
+                                        x:Name="ActiveBorder"
+                                        Width="4"
+                                        Height="24"
+                                        Margin="-4,0,0,0"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        CornerRadius="2" />
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <controls:Icon
+                                            x:Name="ElementIcon"
+                                            Grid.Row="0"
+                                            Margin="0"
+                                            FontSize="24"
+                                            Foreground="{TemplateBinding Foreground}"
+                                            Glyph="{Binding Icon}" />
+
+                                        <Image
+                                            x:Name="ElementImage"
+                                            Grid.Row="0"
+                                            Width="24"
+                                            Margin="0"
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Source="{Binding Image}" />
+
+                                        <Grid
+                                            x:Name="TitleGrid"
+                                            Grid.Row="1"
+                                            Height="15"
+                                            Margin="0,2,0,0">
+                                            <TextBlock
+                                                x:Name="ElementTitle"
+                                                HorizontalAlignment="Center"
+                                                FontSize="10"
+                                                Foreground="{TemplateBinding Foreground}"
+                                                Text="{Binding Text}" />
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Path=IsActive}" Value="True">
+                                    <Setter TargetName="ElementIcon" Property="Filled" Value="True" />
+                                    <Setter TargetName="MainBorder" Property="Background">
+                                        <Setter.Value>
+                                            <SolidColorBrush Color="{DynamicResource ControlFillColorDefault}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="ActiveBorder" Property="Background" Value="{DynamicResource SystemAccentBrush}" />
+                                    <Setter TargetName="ElementIcon" Property="Foreground" Value="{DynamicResource SystemAccentBrush}" />
+                                    <Setter TargetName="ElementTitle" Property="Margin" Value="0" />
+
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    Storyboard.TargetName="TitleGrid"
+                                                    Storyboard.TargetProperty="Height"
+                                                    From="15"
+                                                    To="0"
+                                                    Duration="0:0:.16" />
+                                                <DoubleAnimation
+                                                    Storyboard.TargetName="TitleGrid"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="1"
+                                                    To="0"
+                                                    Duration="0:0:.16" />
+                                                <DoubleAnimation
+                                                    Storyboard.TargetName="MainBorder"
+                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Opacity)"
+                                                    From="0"
+                                                    To="1"
+                                                    Duration="0:0:.16" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    Storyboard.TargetName="TitleGrid"
+                                                    Storyboard.TargetProperty="Height"
+                                                    From="0"
+                                                    To="15"
+                                                    Duration="0:0:.16" />
+                                                <DoubleAnimation
+                                                    Storyboard.TargetName="TitleGrid"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0"
+                                                    To="1"
+                                                    Duration="0:0:.16" />
+                                                <DoubleAnimation
+                                                    Storyboard.TargetName="MainBorder"
+                                                    Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Opacity)"
+                                                    From="1"
+                                                    To="0"
+                                                    Duration="0:0:.16" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Icon}" Value="Empty">
+                                    <Setter TargetName="ElementIcon" Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Image}" Value="{x:Null}">
+                                    <Setter TargetName="ElementImage" Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="MainBorder" Property="Background">
+                                        <Setter.Value>
+                                            <SolidColorBrush Opacity="0.5" Color="{DynamicResource ControlFillColorDefault}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="ElementTitle" Property="Foreground">
+                                        <Setter.Value>
+                                            <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="ElementIcon" Property="Foreground">
+                                        <Setter.Value>
+                                            <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsActive}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <MultiDataTrigger.Setters>
+                                        <Setter TargetName="ElementIcon" Property="Foreground">
+                                            <Setter.Value>
+                                                <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter TargetName="ElementTitle" Property="Foreground">
+                                            <Setter.Value>
+                                                <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </MultiDataTrigger.Setters>
+                                </MultiDataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Button.Style>
+    </Button>
+</UserControl>

@@ -7,7 +7,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using WPFUI.Controls;
+using WPFUI.DIControls;
 
 namespace WPFUI.Demo.Views
 {
@@ -16,14 +16,21 @@ namespace WPFUI.Demo.Views
     /// </summary>
     public partial class Container : Window
     {
-        public Container()
+        public Container(Dialog dialog, Snackbar snackbar, DefaultNavigation navigation)
         {
             WPFUI.Background.Manager.Apply(this);
 
             InitializeComponent();
 
-            RootTitleBar.CloseActionOverride = CloseActionOverride;
+            //RootTitleBar.CloseActionOverride = CloseActionOverride;
 
+            RootDialog.Content =  dialog;
+            RootSnackbar.Content = snackbar;
+
+            RootNavigation.Content = navigation;
+            Breadcrumb.Navigation = navigation;
+
+            navigation.AddFrame(RootFrame);
 
             Task.Run(async () =>
             {
@@ -40,31 +47,9 @@ namespace WPFUI.Demo.Views
             //RootTitleBar.NotifyIconMenu.Items.Add(new MenuItem() { Header = "Test #1" });
         }
 
-        private void CloseActionOverride(TitleBar titleBar, Window window)
+        private void CloseActionOverride(WPFUI.Controls.TitleBar titleBar, Window window)
         {
             Application.Current.Shutdown();
-        }
-
-        private void RootNavigation_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            RootNavigation.Navigate("dashboard");
-        }
-
-        private void RootDialog_LeftButtonClick(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("Root dialog action button was clicked!");
-        }
-
-        private void RootDialog_RightButtonClick(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("Root dialog custom right button was clicked!");
-
-            RootDialog.Show = false;
-        }
-
-        private void RootNavigation_OnNavigated(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("Page now is: " + (sender as NavigationFluent)?.PageNow);
         }
 
         private void TitleBar_OnMinimizeClicked(object sender, RoutedEventArgs e)
