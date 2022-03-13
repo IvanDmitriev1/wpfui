@@ -77,6 +77,7 @@ public partial class App : Application
         collection.AddTransient<Editor>();
         collection.AddTransient<Xbox>();
         collection.AddTransient<Backdrop>();
+        collection.AddTransient<TaskManager>();
 
         collection.AddScoped<Dialog>();
         collection.AddScoped<Snackbar>();
@@ -97,8 +98,6 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        Theme.Watcher.Start(true, true);
-
         _host.StartAsync();
 
         var window = _host.Services.GetRequiredService<Container>();

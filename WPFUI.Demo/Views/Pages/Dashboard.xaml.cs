@@ -42,7 +42,7 @@ namespace WPFUI.Demo.Views.Pages
 
         public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[] ars)
         {
-            System.Diagnostics.Debug.WriteLine("Navigated to dashboard");
+            System.Diagnostics.Debug.WriteLine("DEBUG | Navigated to dashboard", "WPFUI.Demo");
         }
     }
 }

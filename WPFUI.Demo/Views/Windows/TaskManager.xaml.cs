@@ -8,24 +8,20 @@ using System.Windows;
 namespace WPFUI.Demo.Views.Windows
 {
     /// <summary>
-    /// Interaction logic for Bubble.xaml
+    /// Interaction logic for TaskManager.xaml
     /// </summary>
-    public partial class Store : Window
+    public partial class TaskManager : Window
     {
-        public Store(StoreNavigation storeNavigation)
+        public TaskManager()
         {
             WPFUI.Appearance.Background.Apply(this, WPFUI.Appearance.BackgroundType.Mica);
 
             InitializeComponent();
-
-            _storeNavigation = storeNavigation;
-
-            RootNavigation.Content = storeNavigation;
-            Breadcrumb.Navigation = storeNavigation;
-
-            storeNavigation.AddFrame(RootFrame);
         }
 
-        private readonly StoreNavigation _storeNavigation;
+        private void RootNavigation_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            RootNavigation.Navigate("performance");
+        }
     }
 }

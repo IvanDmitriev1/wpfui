@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using System;
+using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using WPFUI.Demo.Views.Windows;
@@ -48,5 +49,10 @@ public partial class WindowsPage : Page, INavigable
     public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[] ars)
     {
         System.Diagnostics.Debug.WriteLine("Page with window selectors loaded.");
+    }
+
+    private void CardTaskManager_Click(object sender, RoutedEventArgs e)
+    {
+        _serviceProvider.GetRequiredService<TaskManager>().Show();
     }
 }
