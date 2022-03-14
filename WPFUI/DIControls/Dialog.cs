@@ -13,8 +13,8 @@ public class DialogConfiguration
     public string DefaultLeftButtonText { get; set; } = "Ok";
     public string DefaultRightButtonText { get; set; } = "Cancel";
 
-    public Appearance ButtonLeftAppearance { get; set; } = Appearance.Primary;
-    public Appearance ButtonRightAppearance { get; set; } = Appearance.Secondary;
+    public Common.Appearance ButtonLeftAppearance { get; set; } = Common.Appearance.Primary;
+    public Common.Appearance ButtonRightAppearance { get; set; } = Common.Appearance.Secondary;
 
     public double Width { get; set; } = 420;
     public double Height { get; set; } = 200;
