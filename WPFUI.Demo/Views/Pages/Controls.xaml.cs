@@ -5,8 +5,10 @@
 
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
-using WPFUI.Common;
-using WPFUI.DIControls;
+using WPFUI.Controls;
+using Dialog = WPFUI.DIControls.Dialog;
+using Icon = WPFUI.Common.Icon;
+using Snackbar = WPFUI.DIControls.Snackbar;
 
 namespace WPFUI.Demo.Views.Pages;
 
@@ -100,13 +102,18 @@ public partial class Controls : Page
 
         messageBox.ButtonLeftClick += MessageBox_LeftButtonClick;
         messageBox.ButtonRightClick += MessageBox_RightButtonClick;
-
+        
         messageBox.Show("Something weird", "May happen");
     }
 
-    private static void MessageBox_LeftButtonClick(object sender, System.Windows.RoutedEventArgs e)
+    private void Button_ShowContextMenu_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        (sender as WPFUI.Controls.MessageBox)?.Close();
+        ContextMenu.IsOpen = true;
+    }
+
+    private void MessageBox_LeftButtonClick(object sender, System.Windows.RoutedEventArgs e)
+    {
+        (sender as MessageBox)?.Close();
     }
 
     private static void MessageBox_RightButtonClick(object sender, System.Windows.RoutedEventArgs e)
