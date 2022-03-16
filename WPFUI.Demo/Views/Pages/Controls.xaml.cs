@@ -108,7 +108,40 @@ public partial class Controls : Page
 
     private void Button_ShowContextMenu_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        ContextMenu.IsOpen = true;
+        //CREATE PROGRAMMATICALLY
+        //Right now it is not possible to open the ContextMenu from CodeBehind (ContextMenu.IsOpen = true) because when it is not created again after a Theme-Change it will not use the new Theme
+        //Without creating it in CodeBehing the Theme-Change during Runtime would therefore not have any affect on the ContextMenu until you force it to rebuild by opening it through a Right-Click onto it's host-card
+        //Comment and temporary fix by https://github.com/ParzivalExe
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.Items.Add(new MenuItem()
+        {
+            Header = "Normal Item"
+        });
+        contextMenu.Items.Add(new MenuItem()
+        {
+            Header = "With Icon",
+            Icon = WPFUI.Common.Icon.TextBox16
+        });
+        contextMenu.Items.Add(new MenuItem()
+        {
+            Header = "Deactivated",
+            IsEnabled = false
+        });
+        MenuItem subMenu = new MenuItem()
+        {
+            Header = "SubMenu"
+        };
+        subMenu.Items.Add(new MenuItem()
+        {
+            Header = "Item 1"
+        }); 
+        subMenu.Items.Add(new MenuItem()
+        {
+            Header = "Item 2"
+        });
+        contextMenu.Items.Add(subMenu);
+
+        contextMenu.IsOpen = true;
     }
 
     private void MessageBox_LeftButtonClick(object sender, System.Windows.RoutedEventArgs e)
