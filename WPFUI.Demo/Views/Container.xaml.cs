@@ -30,6 +30,7 @@ namespace WPFUI.Demo.Views
             RootDialog.Content =  dialog;
             RootSnackbar.Content = snackbar;
 
+            RootTitleBar.Navigation = navigation;
             RootNavigation.Content = navigation;
             Breadcrumb.Navigation = navigation;
 
@@ -39,7 +40,7 @@ namespace WPFUI.Demo.Views
                 WPFUI.Appearance.Watcher.Watch(this, Appearance.BackgroundType.Mica, true);
             };
 
-            RootTitleBar.CloseActionOverride = CloseActionOverride;
+            //RootTitleBar.CloseActionOverride = CloseActionOverride;
 
             Task.Run(async () =>
             {

@@ -3,12 +3,16 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+#nullable enable
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using WPFUI.Common;
+using WPFUI.DIControls.Interfaces;
+using WPFUI.Tray;
 using WPFUI.Win32;
 
 namespace WPFUI.Controls
@@ -22,9 +26,11 @@ namespace WPFUI.Controls
 
         private User32.POINT _doubleClickPoint;
 
-        private Tray.NotifyIcon _notifyIcon;
+        private Tray.NotifyIcon? _notifyIcon;
 
         private Common.SnapLayout _snapLayout;
+
+        private bool _canNavigateBack;
 
         /// <summary>
         /// Property for <see cref="Title"/>.
@@ -146,6 +152,41 @@ namespace WPFUI.Controls
                 typeof(Common.IRelayCommand), typeof(TitleBar), new PropertyMetadata(null));
 
         /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty NavigationProperty =
+            DependencyProperty.Register(nameof(Navigation),
+                typeof(INavigation), typeof(TitleBar), new PropertyMetadata(null));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty BackButtonCommandProperty =
+            DependencyProperty.Register(nameof(BackButtonCommand),
+                typeof(ICommand), typeof(TitleBar), new PropertyMetadata(null));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty CloseToTrayProperty = DependencyProperty.Register(
+            nameof(CloseToTray),
+            typeof(bool), typeof(TitleBar), new PropertyMetadata(false));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public INavigation? Navigation
+        {
+            get => (INavigation)GetValue(NavigationProperty);
+            set
+            {
+                SetValue(NavigationProperty, value);
+                value!.Navigated += OnNavigated;
+                ApplicationNavigation = true;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets title displayed on the left.
         /// </summary>
         public string Title
@@ -162,6 +203,16 @@ namespace WPFUI.Controls
             get => (bool)GetValue(MinimizeToTrayProperty);
             set => SetValue(MinimizeToTrayProperty, value);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool CloseToTray
+        {
+            get => (bool)GetValue(CloseToTrayProperty);
+            set => SetValue(CloseToTrayProperty, value);
+        }
+
 
         /// <summary>
         /// Gets or sets information whether the use Windows 11 Snap Layout.
@@ -299,26 +350,16 @@ namespace WPFUI.Controls
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public ICommand BackButtonCommand => (RelayCommand) GetValue(BackButtonCommandProperty);
+
+        /// <summary>
         /// Command triggered after clicking the titlebar button.
         /// </summary>
         public Common.IRelayCommand ButtonCommand => (Common.IRelayCommand)GetValue(ButtonCommandProperty);
 
-        /// <summary>
-        /// Lets you override the behavior of the Close button with an <see cref="Action"/>.
-        /// </summary>
-        public Action<TitleBar, Window> CloseActionOverride { get; set; } = null;
-
-        /// <summary>
-        /// Lets you override the behavior of the Maximize/Restore button with an <see cref="Action"/>.
-        /// </summary>
-        public Action<TitleBar, Window> MaximizeActionOverride { get; set; } = null;
-
-        /// <summary>
-        /// Lets you override the behavior of the Minimize button with an <see cref="Action"/>.
-        /// </summary>
-        public Action<TitleBar, Window> MinimizeActionOverride { get; set; } = null;
-
-        private Window ParentWindow => _parent ??= Window.GetWindow(this);
+        private Window? ParentWindow => _parent ??= Window.GetWindow(this);
 
         /// <summary>
         /// Creates a new instance of the class and sets the default <see cref="FrameworkElement.Loaded"/> event.
@@ -327,7 +368,26 @@ namespace WPFUI.Controls
         {
             SetValue(ButtonCommandProperty, new Common.RelayCommand(o => TemplateButton_OnClick(this, o)));
 
+            SetValue(BackButtonCommandProperty,
+                new Common.RelayCommand(() => Navigation!.NavigateBack(), () => _canNavigateBack));
+
             Loaded += TitleBar_Loaded;
+
+            Unloaded += (sender, args) =>
+            {
+                Loaded -= TitleBar_Loaded;
+
+                var rootGrid = (System.Windows.Controls.Grid)Template.FindName("RootGrid", this);
+
+                if (rootGrid != null)
+                {
+                    rootGrid.MouseLeftButtonDown -= RootGrid_MouseLeftButtonDown;
+                    rootGrid.MouseMove -= RootGrid_MouseMove;
+                }
+
+                if (ParentWindow != null)
+                    ParentWindow.StateChanged -= ParentWindow_StateChanged;
+            };
         }
 
         /// <summary>
@@ -335,51 +395,28 @@ namespace WPFUI.Controls
         /// </summary>
         public void ResetIcon()
         {
-            if (_notifyIcon != null)
-                _notifyIcon.Destroy();
+            _notifyIcon?.Destroy();
 
             InitializeNotifyIcon();
         }
 
         private void CloseWindow()
         {
-            if (CloseActionOverride != null)
-            {
-                CloseActionOverride(this, _parent);
+            if (CloseToTray && UseNotifyIcon && MinimizeWindowToTray()) return;
 
-                return;
-            }
-
-            if (ApplicationNavigation)
-                Application.Current.Shutdown();
-            else
-                ParentWindow.Close();
+            ParentWindow!.Close();
         }
 
         private void MinimizeWindow()
         {
             if (MinimizeToTray && UseNotifyIcon && MinimizeWindowToTray()) return;
 
-            if (MinimizeActionOverride != null)
-            {
-                MinimizeActionOverride(this, _parent);
-
-                return;
-            }
-
-            ParentWindow.WindowState = WindowState.Minimized;
+            ParentWindow!.WindowState = WindowState.Minimized;
         }
 
         private void MaximizeWindow()
         {
-            if (MaximizeActionOverride != null)
-            {
-                MaximizeActionOverride(this, _parent);
-
-                return;
-            }
-
-            if (ParentWindow.WindowState == WindowState.Normal)
+            if (ParentWindow!.WindowState == WindowState.Normal)
             {
                 IsMaximized = true;
                 ParentWindow.WindowState = WindowState.Maximized;
@@ -397,7 +434,7 @@ namespace WPFUI.Controls
 
             NotifyIconClick += OnNotifyIconClick;
 
-            _notifyIcon = new()
+            _notifyIcon = new NotifyIcon
             {
                 Parent = this,
                 Tooltip = NotifyIconTooltip,
@@ -415,7 +452,7 @@ namespace WPFUI.Controls
             if (_notifyIcon == null)
                 return false;
 
-            ParentWindow.WindowState = WindowState.Minimized;
+            ParentWindow!.WindowState = WindowState.Minimized;
             ParentWindow.Hide();
 
             return true;
@@ -425,7 +462,7 @@ namespace WPFUI.Controls
         {
             if (!MinimizeToTray) return;
 
-            if (ParentWindow.WindowState != WindowState.Minimized) return;
+            if (ParentWindow!.WindowState != WindowState.Minimized) return;
 
             ParentWindow.Show();
             ParentWindow.WindowState = WindowState.Normal;
@@ -446,6 +483,8 @@ namespace WPFUI.Controls
 
         private void TitleBar_Loaded(object sender, RoutedEventArgs e)
         {
+            if (DesignerProperties.GetIsInDesignMode(this)) return;
+
             if (UseNotifyIcon)
                 InitializeNotifyIcon();
 
@@ -522,23 +561,29 @@ namespace WPFUI.Controls
             MaximizeWindow();
         }
 
+        private void OnNavigated(object? sender, NavigatedEventArgs e)
+        {
+            var nav = (INavigation) sender!;
+            _canNavigateBack = nav.ReadyToNavigateBack;
+        }
+
         private void TemplateButton_OnClick(TitleBar sender, object parameter)
         {
-            string command = parameter as string;
+            var command = (string)parameter;
 
             switch (command)
             {
-                case "close":
+                case "2":
                     RaiseEvent(new RoutedEventArgs(CloseClickedEvent, this));
                     CloseWindow();
                     break;
 
-                case "minimize":
+                case "0":
                     RaiseEvent(new RoutedEventArgs(MinimizeClickedEvent, this));
                     MinimizeWindow();
                     break;
 
-                case "maximize":
+                case "1":
                     RaiseEvent(new RoutedEventArgs(MaximizeClickedEvent, this));
                     MaximizeWindow();
                     break;
