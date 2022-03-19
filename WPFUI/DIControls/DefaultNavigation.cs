@@ -18,12 +18,17 @@ public class DefaultNavigationConfiguration
         VisableItems = new Dictionary<string, INavigationItem>();
         VisableFooterItems = new Dictionary<string, INavigationItem>();
         HiddenItemsItems = new Dictionary<string, INavigationItem>();
+
+        StartupPageTag = string.Empty;
+        PagesTypes = Type.EmptyTypes;
     }
 
-    public string StartupPageTag { get; set; } = string.Empty;
+    public string StartupPageTag { get; set; }
     public Dictionary<string,  INavigationItem> VisableItems { get; set; }
     public Dictionary<string, INavigationItem> VisableFooterItems { get; set; }
     public Dictionary<string, INavigationItem> HiddenItemsItems { get; set; }
+
+    public IReadOnlyCollection<Type> PagesTypes { get; set; }
 }
 
 public class DefaultNavigation : INavigation, IDisposable
@@ -62,6 +67,10 @@ public class DefaultNavigation : INavigation, IDisposable
         }
 
         _allItems = new ReadOnlyDictionary<string, INavigationItem>(dictionary);
+
+
+        if (value.PagesTypes.Count > 0)
+            _pagesTypes = value.PagesTypes.ToDictionary<Type?, Type, Page?>(type => type, type => null);
     }
 
     #region Variables
@@ -72,6 +81,8 @@ public class DefaultNavigation : INavigation, IDisposable
     private readonly IReadOnlyDictionary<string, INavigationItem> _allItems;
     private readonly List<INavigationItem> _history;
     private readonly ObservableCollection<INavigationItem> _navigationStack;
+
+    private static Dictionary<Type, Page?> _pagesTypes = new();
 
     #endregion
 
@@ -182,8 +193,16 @@ public class DefaultNavigation : INavigation, IDisposable
 
         if (item.Instance is null || refresh)
         {
-            item.Instance = null;
-            item.Instance = _serviceProvider.GetRequiredService(item.PageType) as Page;
+            if (_pagesTypes[item.PageType] is null)
+            {
+                var instance = _serviceProvider.GetRequiredService(item.PageType) as Page;
+                _pagesTypes[item.PageType] = instance;
+                item.Instance = instance;
+            }
+            else
+            {
+                item.Instance = _pagesTypes[item.PageType];
+            }
         }
 
         var navigationStackCount = _navigationStack.Count;

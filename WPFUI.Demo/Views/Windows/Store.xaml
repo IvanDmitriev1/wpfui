@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:WPFUI.Demo.Views.Pages"
     xmlns:wpfui="clr-namespace:WPFUI.Controls;assembly=WPFUI"
+    Name="StoreWindow"
     Title="WPF UI - Store Navigation Preview"
     Style="{StaticResource UiWindow}"
     WindowStartupLocation="CenterScreen"
@@ -43,7 +44,18 @@
                         FontSize="24" />
                 </Grid>
             </Border>
+
+            <ContentControl
+                x:Name="RootSnackbar"
+                Grid.Row="0"
+                Grid.Column="1" />
         </Grid>
+
+        <ContentControl
+            x:Name="RootDialog"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0" />
 
         <wpfui:TitleBar
             Title="WPF UI - Fluent design system"

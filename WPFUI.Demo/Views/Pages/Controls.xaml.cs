@@ -6,9 +6,8 @@
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using WPFUI.Controls;
-using Dialog = WPFUI.DIControls.Dialog;
+using WPFUI.DIControls.Interfaces;
 using Icon = WPFUI.Common.Icon;
-using Snackbar = WPFUI.DIControls.Snackbar;
 
 namespace WPFUI.Demo.Views.Pages;
 
@@ -26,8 +25,8 @@ public enum OrderStatus
 /// </summary>
 public partial class Controls : Page
 {
-    private readonly Dialog _dialog;
-    private readonly Snackbar _snackbar;
+    private readonly App.DialogResolver _dialogResolver;
+    private readonly App.SnackBarResolver _snackbarResolver;
 
     public class Customer
     {
@@ -42,10 +41,10 @@ public partial class Controls : Page
 
     public ObservableCollection<Customer> DataGridItemCollection { get; set; }
 
-    public Controls(Dialog dialog, Snackbar snackbar)
+    public Controls(App.DialogResolver dialogResolver, App.SnackBarResolver snackbarResolver)
     {
-        _dialog = dialog;
-        _snackbar = snackbar;
+        _dialogResolver = dialogResolver;
+        _snackbarResolver = snackbarResolver;
 
         InitializeComponent();
 
@@ -81,14 +80,14 @@ public partial class Controls : Page
 
     private async void Button_ShowDialog_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        await _dialog.ShowDialog("What is it like to be a scribe? Is it good? In my opinion it's not about being good or not good. If I were to say what I esteem the most in life, I would say - people. People, who gave me a helping hand when I was a mess, when I was alone. And what's interesting, the chance meetings are the ones that influence our lives. The point is that when you profess certain values, even those seemingly universal, you may not find any understanding which, let me say, which helps us to develop. I had luck, let me say, because I found it. And I'd like to thank life. I'd like to thank it - life is singing, life is dancing, life is love. Many people ask me the same question, but how do you do that? where does all your happiness come from? And i replay that it's easy, it's cherishing live, that's what makes me build machines today, and tomorrow... who knows, why not, i would dedicate myself to do some community working and i would be, wham, not least... planting .... i mean... carrots", "WPF UI");
+        await _dialogResolver.Invoke().ShowDialog("What is it like to be a scribe? Is it good? In my opinion it's not about being good or not good. If I were to say what I esteem the most in life, I would say - people. People, who gave me a helping hand when I was a mess, when I was alone. And what's interesting, the chance meetings are the ones that influence our lives. The point is that when you profess certain values, even those seemingly universal, you may not find any understanding which, let me say, which helps us to develop. I had luck, let me say, because I found it. And I'd like to thank life. I'd like to thank it - life is singing, life is dancing, life is love. Many people ask me the same question, but how do you do that? where does all your happiness come from? And i replay that it's easy, it's cherishing live, that's what makes me build machines today, and tomorrow... who knows, why not, i would dedicate myself to do some community working and i would be, wham, not least... planting .... i mean... carrots");
 
         //(((Container)System.Windows.Application.Current.MainWindow)!).RootDialog.Show = true;
     }
 
     private void Button_ShowSnackbar_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        _snackbar.Expand("Remember that the Heat Death of Universe is coming someday, no time to explain - let's go!", "WPF UI", Icon.PuzzlePiece24, 2000);
+        _snackbarResolver.Invoke().Expand("Remember that the Heat Death of Universe is coming someday, no time to explain - let's go!", Icon.PuzzlePiece24, 2000);
 
         //(((Container)System.Windows.Application.Current.MainWindow)!).RootSnackbar.Expand();
     }

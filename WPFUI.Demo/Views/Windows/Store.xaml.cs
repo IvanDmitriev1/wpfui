@@ -12,13 +12,15 @@ namespace WPFUI.Demo.Views.Windows
     /// </summary>
     public partial class Store : Window
     {
-        public Store(StoreNavigation storeNavigation)
+        public Store(StoreNavigation storeNavigation, StoreSnackbar snackbar, StoreDialog storeDialog)
         {
             WPFUI.Appearance.Background.Apply(this, WPFUI.Appearance.BackgroundType.Mica);
 
             InitializeComponent();
 
             _storeNavigation = storeNavigation;
+            RootSnackbar.Content = snackbar;
+            RootDialog.Content = storeDialog;
 
             RootNavigation.Content = storeNavigation;
             Breadcrumb.Navigation = storeNavigation;

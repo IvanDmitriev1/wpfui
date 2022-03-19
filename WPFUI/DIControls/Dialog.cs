@@ -4,32 +4,81 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Options;
 using WPFUI.Common;
+using WPFUI.DIControls.Interfaces;
 
 namespace WPFUI.DIControls;
 
-public class DialogConfiguration
+[INotifyPropertyChanged]
+public partial class DialogObservableConfiguration : DialogConfiguration
 {
-    public string DefaultTitle { get; set; } = string.Empty;
-    public string DefaultLeftButtonText { get; set; } = "Ok";
-    public string DefaultRightButtonText { get; set; } = "Cancel";
+    private string _title;
+    private string _leftButtonText;
+    private string _rightButtonText;
+    private Common.Appearance _leftButtonAppearance;
+    private Common.Appearance _rightButtonAppearance;
+    private double _width;
+    private double _height;
 
-    public Common.Appearance ButtonLeftAppearance { get; set; } = Common.Appearance.Primary;
-    public Common.Appearance ButtonRightAppearance { get; set; } = Common.Appearance.Secondary;
 
-    public double Width { get; set; } = 420;
-    public double Height { get; set; } = 200;
+    public string Title
+    {
+        get => _title;
+        set => SetProperty(ref _title, value);
+    }
+
+    public string LeftButtonText
+    {
+        get => _leftButtonText;
+        set => SetProperty(ref _leftButtonText, value);
+    }
+
+    public string RightButtonText
+    {
+        get => _rightButtonText;
+        set => SetProperty(ref _rightButtonText, value);
+    }
+
+    public Common.Appearance LeftButtonAppearance
+    {
+        get => _leftButtonAppearance;
+        set => SetProperty(ref _leftButtonAppearance, value);
+    }
+
+    public Common.Appearance RightButtonAppearance
+    {
+        get => _rightButtonAppearance;
+        set => SetProperty(ref _rightButtonAppearance, value);
+    }
+
+
+    public double Width
+    {
+        get => _width;
+        set => SetProperty(ref _width, value);
+    }
+
+    public double Height
+    {
+        get => _height;
+        set => SetProperty(ref _height, value);
+    }
 }
 
-public partial class Dialog : ObservableObject
+
+public partial class Dialog : ObservableObject, IDialog
 {
     public Dialog(IOptions<DialogConfiguration> configuration)
     {
-        Configuration = configuration.Value;
+        _defaultConfiguration = configuration.Value;
+        Configuration = new DialogObservableConfiguration();
+
+        SetValues(_defaultConfiguration);
     }
 
-    public DialogConfiguration Configuration { get; }
-
     private TaskCompletionSource<ButtonPressed> _tcs;
+    private readonly DialogConfiguration _defaultConfiguration;
+
+    public DialogObservableConfiguration Configuration { get; }
 
     [ObservableProperty]
     private string _text;
@@ -37,57 +86,46 @@ public partial class Dialog : ObservableObject
     [ObservableProperty]
     private bool _show;
 
-    [ObservableProperty]
-    private string _title;
-
-    [ObservableProperty]
-    private string _leftButtonText;
-
-    [ObservableProperty]
-    private string _rightButtonText;
-
     [ICommand]
     private void LeftButtonClick()
     {
         _tcs.SetResult(ButtonPressed.Left);
-        SetValues();
+        SetDefaultValues();
     }
 
     [ICommand]
     private void RightButtonClick()
     {
         _tcs.SetResult(ButtonPressed.Right);
-        SetValues();
+        SetDefaultValues();
     }
 
-    [ICommand]
-    private void SetValues()
+    private void SetDefaultValues()
     {
-        Title = Configuration.DefaultTitle;
-        LeftButtonText = Configuration.DefaultLeftButtonText;
-        RightButtonText = Configuration.DefaultRightButtonText;
-
         Show = false;
+        SetValues(_defaultConfiguration);
     }
 
-    /// <summary>
-    /// Show dialog
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="title"></param>
-    /// <param name="leftButtonText"></param>
-    /// <param name="rightButtonText"></param>
-    /// <returns></returns>
-    public Task<ButtonPressed> ShowDialog(string message, string? title = null, string? leftButtonText = null, string? rightButtonText = null)
+    private void SetValues(in DialogConfiguration configuration)
+    {
+        Configuration.Title = configuration.Title;
+        Configuration.LeftButtonText = configuration.LeftButtonText;
+        Configuration.RightButtonText = configuration.RightButtonText;
+        Configuration.LeftButtonAppearance = configuration.LeftButtonAppearance;
+        Configuration.RightButtonAppearance = configuration.RightButtonAppearance;
+        Configuration.Height = configuration.Height;
+        Configuration.Width = configuration.Width;
+    }
+
+    public Task<ButtonPressed> ShowDialog(string message, DialogConfiguration? configuration = null)
     {
         _tcs = new TaskCompletionSource<ButtonPressed>();
 
         Show = true;
         Text = message;
 
-        Title = title ?? Configuration.DefaultTitle;
-        LeftButtonText = leftButtonText ?? Configuration.DefaultLeftButtonText;
-        RightButtonText = rightButtonText ?? Configuration.DefaultRightButtonText;
+        if (configuration is not null)
+            SetValues(configuration);
 
         return _tcs.Task;
     }

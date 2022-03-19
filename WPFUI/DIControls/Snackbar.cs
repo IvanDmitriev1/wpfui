@@ -1,40 +1,53 @@
-﻿using System.Threading.Tasks;
+﻿#nullable enable
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Options;
 using WPFUI.Common;
-using WPFUI.Controls.Interfaces;
+using WPFUI.DIControls.Interfaces;
 
 namespace WPFUI.DIControls;
 
 public class SnackbarConfiguration
 {
-    public int Timeout { get; set; } = 2000;
-    public TranslateTransform SlideTransform { get; set; } = new();
+    public SnackbarConfiguration()
+    {
+        Timeout = 2000;
+        Title = string.Empty;
+        SlideTransform = new TranslateTransform();
+    }
+
+    public int Timeout { get; set; }
+    public string Title { get; set; }
+    public TranslateTransform SlideTransform { get; set; }
 }
 
-public partial class Snackbar : ObservableObject, IIconControl
+public partial class Snackbar : ObservableObject, ISnackbar
 {
     public Snackbar(IOptions<SnackbarConfiguration> options)
     {
         _identifier = new EventIdentifier();
-        var value = options.Value;
+        var configuration = options.Value;
 
-        _timeout = value.Timeout;
-        _slideTransform = value.SlideTransform;
-
+        _defaultTitle = configuration.Title;
+        _timeout = configuration.Timeout;
+        _slideTransform = configuration.SlideTransform;
         _icon = Icon.Empty;
     }
+
+    private readonly int _timeout;
+    private readonly string _defaultTitle;
+    private readonly EventIdentifier _identifier;
+
+    private Icon _icon;
+    private bool _iconFilled;
 
     #region ObservableProperties
 
     [ObservableProperty]
     private bool _show;
-
-    [ObservableProperty]
-    private int _timeout;
 
     [ObservableProperty]
     private string _title;
@@ -45,12 +58,7 @@ public partial class Snackbar : ObservableObject, IIconControl
     [ObservableProperty]
     private TranslateTransform _slideTransform;
 
-    private Icon _icon;
-    private bool _iconFilled;
-
-    private readonly EventIdentifier _identifier;
-
-    public Thickness IconMargin => Icon == Common.Icon.Empty ? new Thickness(0) : new Thickness(0, 0, 12, 0);
+    public Thickness IconMargin => Icon == Icon.Empty ? new Thickness(0) : new Thickness(0, 0, 12, 0);
 
     public Icon Icon
     {
@@ -83,7 +91,7 @@ public partial class Snackbar : ObservableObject, IIconControl
 
         Show = true;
 
-        timeout ??= Timeout;
+        timeout ??= _timeout;
 
         if (timeout > 0)
             HideComponent((int) timeout);
@@ -107,10 +115,21 @@ public partial class Snackbar : ObservableObject, IIconControl
             Show = false;
     }
 
+    private void SetValues(in string message, Icon icon = Icon.Empty, in string? title = null)
+    {
+        Title = title ?? _defaultTitle;
+        Message = message;
+        Icon = icon;
+    }
+
     /// <summary>
-    /// Sets <see cref="Title"/> and <see cref="Message"/>, then shows the snackbar for the amount of time specified in <see cref="Timeout"/>.
+    /// 
     /// </summary>
-    public async void Expand(string message, string title, Common.Icon icon = Common.Icon.Empty, int? timeout = null)
+    /// <param name="message"></param>
+    /// <param name="icon"></param>
+    /// <param name="title"></param>
+    /// <param name="timeout"></param>
+    public async void Expand(string message, Icon icon = Icon.Empty, int? timeout = null, string? title = null)
     {
         if (Show)
         {
@@ -121,19 +140,13 @@ public partial class Snackbar : ObservableObject, IIconControl
             if (Application.Current == null)
                 return;
 
-            Title = title;
-            Message = message;
-            Icon = icon;
-
+            SetValues(message, icon, title);
             ShowComponent(timeout);
 
             return;
         }
 
-        Title = title;
-        Message = message;
-        Icon = icon;
-
+        SetValues(message, icon, title);
         ShowComponent(timeout);
     }
 }
