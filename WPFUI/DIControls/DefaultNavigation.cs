@@ -193,16 +193,7 @@ public class DefaultNavigation : INavigation, IDisposable
 
         if (item.Instance is null || refresh)
         {
-            if (_pagesTypes[item.PageType] is null)
-            {
-                var instance = _serviceProvider.GetRequiredService(item.PageType) as Page;
-                _pagesTypes[item.PageType] = instance;
-                item.Instance = instance;
-            }
-            else
-            {
-                item.Instance = _pagesTypes[item.PageType];
-            }
+            item.Instance = GetPageInstance(item.PageType, refresh);
         }
 
         var navigationStackCount = _navigationStack.Count;
@@ -270,6 +261,20 @@ public class DefaultNavigation : INavigation, IDisposable
     {
         var frame = (Frame)sender;
         frame.NavigationService.RemoveBackEntry();
+    }
+
+    private Page GetPageInstance(in Type pageType, bool refresh)
+    {
+        if (_pagesTypes.Count == 0)
+            return (Page) _serviceProvider.GetRequiredService(pageType);
+
+        if (refresh)
+            _pagesTypes[pageType] = null;
+
+        if (_pagesTypes[pageType] is null)
+            return _pagesTypes[pageType] = (Page) _serviceProvider.GetRequiredService(pageType);
+
+        return _pagesTypes[pageType]!;
     }
 
     #endregion
