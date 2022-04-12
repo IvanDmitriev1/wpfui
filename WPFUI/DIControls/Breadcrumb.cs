@@ -5,6 +5,9 @@ using WPFUI.DIControls.Interfaces;
 
 namespace WPFUI.DIControls;
 
+/// <summary>
+/// 
+/// </summary>
 public class Breadcrumb : System.Windows.Controls.Control
 {
     /// <summary>
@@ -14,12 +17,21 @@ public class Breadcrumb : System.Windows.Controls.Control
         typeof(INavigation), typeof(Breadcrumb),
         new PropertyMetadata(null));
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static readonly DependencyProperty NavigationItemsProperty = DependencyProperty.Register(nameof(NavigationItems),
         typeof(ObservableCollection<INavigationItem>), typeof(Breadcrumb), new PropertyMetadata(new ObservableCollection<INavigationItem>()));
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static readonly DependencyProperty FirstNavigationItemProperty = DependencyProperty.Register(nameof(FirstNavigationItem),
         typeof(INavigationItem), typeof(Breadcrumb), new PropertyMetadata(null));
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static readonly DependencyProperty IsFirstElementActiveProperty = DependencyProperty.Register(nameof(IsFirstElementActive),
         typeof(bool), typeof(Breadcrumb), new PropertyMetadata(null));
 
@@ -36,18 +48,27 @@ public class Breadcrumb : System.Windows.Controls.Control
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public bool IsFirstElementActive
     {
         get => (bool)GetValue(IsFirstElementActiveProperty);
         set => SetValue(IsFirstElementActiveProperty, value);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public INavigationItem FirstNavigationItem
     {
         get => (INavigationItem)GetValue(FirstNavigationItemProperty);
         set => SetValue(FirstNavigationItemProperty, value);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public ObservableCollection<INavigationItem> NavigationItems
     {
         get => (ObservableCollection<INavigationItem>)GetValue(NavigationItemsProperty);

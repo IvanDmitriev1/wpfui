@@ -400,7 +400,7 @@ namespace WPFUI.Controls
             SetValue(ButtonCommandProperty, new Common.RelayCommand(o => TemplateButton_OnClick(this, o)));
 
             SetValue(BackButtonCommandProperty,
-                new Common.RelayCommand(() => Navigation!.NavigateBack(), () => _canNavigateBack));
+                new Common.RelayCommand(NavigateBack, () => _canNavigateBack));
 
             Loaded += TitleBar_Loaded;
 
@@ -653,6 +653,11 @@ namespace WPFUI.Controls
             //}
 
             //titleBar.ResetIcon();
+        }
+
+        private async void NavigateBack()
+        {
+            await Navigation!.NavigateBack();
         }
     }
 }

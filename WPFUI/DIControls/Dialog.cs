@@ -8,6 +8,9 @@ using WPFUI.DIControls.Interfaces;
 
 namespace WPFUI.DIControls;
 
+/// <summary>
+/// 
+/// </summary>
 [INotifyPropertyChanged]
 public partial class DialogObservableConfiguration : DialogConfiguration
 {
@@ -20,44 +23,64 @@ public partial class DialogObservableConfiguration : DialogConfiguration
     private double _height;
 
 
-    public string Title
+    /// <summary>
+    /// 
+    /// </summary>
+    public new string Title
     {
         get => _title;
         set => SetProperty(ref _title, value);
     }
 
-    public string LeftButtonText
+    /// <summary>
+    /// 
+    /// </summary>
+    public new string LeftButtonText
     {
         get => _leftButtonText;
         set => SetProperty(ref _leftButtonText, value);
     }
 
-    public string RightButtonText
+    /// <summary>
+    /// 
+    /// </summary>
+    public new string RightButtonText
     {
         get => _rightButtonText;
         set => SetProperty(ref _rightButtonText, value);
     }
 
-    public Common.Appearance LeftButtonAppearance
+    /// <summary>
+    /// 
+    /// </summary>
+    public new Common.Appearance LeftButtonAppearance
     {
         get => _leftButtonAppearance;
         set => SetProperty(ref _leftButtonAppearance, value);
     }
 
-    public Common.Appearance RightButtonAppearance
+    /// <summary>
+    /// 
+    /// </summary>
+    public new Common.Appearance RightButtonAppearance
     {
         get => _rightButtonAppearance;
         set => SetProperty(ref _rightButtonAppearance, value);
     }
 
-
-    public double Width
+    /// <summary>
+    /// 
+    /// </summary>
+    public new double Width
     {
         get => _width;
         set => SetProperty(ref _width, value);
     }
 
-    public double Height
+    /// <summary>
+    /// 
+    /// </summary>
+    public new double Height
     {
         get => _height;
         set => SetProperty(ref _height, value);
@@ -65,8 +88,15 @@ public partial class DialogObservableConfiguration : DialogConfiguration
 }
 
 
+/// <summary>
+/// 
+/// </summary>
 public partial class Dialog : ObservableObject, IDialog
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="configuration"></param>
     public Dialog(IOptions<DialogConfiguration> configuration)
     {
         _defaultConfiguration = configuration.Value;
@@ -78,6 +108,9 @@ public partial class Dialog : ObservableObject, IDialog
     private TaskCompletionSource<ButtonPressed> _tcs;
     private readonly DialogConfiguration _defaultConfiguration;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public DialogObservableConfiguration Configuration { get; }
 
     [ObservableProperty]
@@ -117,6 +150,12 @@ public partial class Dialog : ObservableObject, IDialog
         Configuration.Width = configuration.Width;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
     public Task<ButtonPressed> ShowDialog(string message, DialogConfiguration? configuration = null)
     {
         _tcs = new TaskCompletionSource<ButtonPressed>();

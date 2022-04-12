@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using WPFUI.DIControls;
@@ -25,24 +26,26 @@ namespace WPFUI.Demo.Views.Pages
 
         private readonly INavigation _navigation;
 
-        private void ActionCardIcons_Click(object sender, RoutedEventArgs e)
+        private async void ActionCardIcons_Click(object sender, RoutedEventArgs e)
         {        
-            _navigation.NavigateTo(nameof(Icons));
+            await _navigation.NavigateTo(nameof(Icons));
         }
 
-        private void ActionCardColors_Click(object sender, RoutedEventArgs e)
+        private async void ActionCardColors_Click(object sender, RoutedEventArgs e)
         {
-            _navigation.NavigateTo(nameof(Colors));
+            await _navigation.NavigateTo(nameof(Colors));
         }
 
-        private void ActionCardControls_Click(object sender, RoutedEventArgs e)
+        private async void ActionCardControls_Click(object sender, RoutedEventArgs e)
         {
-            _navigation.NavigateTo(nameof(Controls));
+            await _navigation.NavigateTo(nameof(Controls));
         }
 
-        public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[] ars)
+        public Task OnNavigationRequest(INavigation navigation, string previousPageTag, object[] ars)
         {
             System.Diagnostics.Debug.WriteLine("DEBUG | Navigated to dashboard", "WPFUI.Demo");
+
+            return Task.CompletedTask;
         }
     }
 }

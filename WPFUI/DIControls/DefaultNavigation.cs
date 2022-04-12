@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,28 +13,57 @@ using WPFUI.DIControls.Interfaces;
 
 namespace WPFUI.DIControls;
 
+/// <summary>
+/// 
+/// </summary>
 public class DefaultNavigationConfiguration
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public DefaultNavigationConfiguration()
     {
-        VisableItems = new Dictionary<string, INavigationItem>();
-        VisableFooterItems = new Dictionary<string, INavigationItem>();
-        HiddenItemsItems = new Dictionary<string, INavigationItem>();
+        VisibleItems = Array.Empty<INavigationItem>();
+        VisibleFooterItems = Array.Empty<INavigationItem>();
+        HiddenItemsItems = Array.Empty<INavigationItem>();
 
         StartupPageTag = string.Empty;
         PagesTypes = Type.EmptyTypes;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public string StartupPageTag { get; set; }
-    public Dictionary<string,  INavigationItem> VisableItems { get; set; }
-    public Dictionary<string, INavigationItem> VisableFooterItems { get; set; }
-    public Dictionary<string, INavigationItem> HiddenItemsItems { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public INavigationItem[] VisibleItems { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public INavigationItem[] VisibleFooterItems { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public INavigationItem[] HiddenItemsItems { get; set; }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public IReadOnlyCollection<Type> PagesTypes { get; set; }
 }
 
+/// <summary>
+/// 
+/// </summary>
 public class DefaultNavigation : INavigation, IDisposable
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    /// <param name="configureOptions"></param>
     public DefaultNavigation(IServiceProvider serviceProvider, IOptions<DefaultNavigationConfiguration> configureOptions)
     {
         var value = configureOptions.Value;
@@ -43,34 +74,15 @@ public class DefaultNavigation : INavigation, IDisposable
 
         var dictionary = new Dictionary<string, INavigationItem>();
 
-        foreach (var (key, navigationItem) in value.VisableItems)
-        {
-            navigationItem.Clicked += ItemOnClicked;
-
-            dictionary.Add(key, navigationItem);
-        }
-
-        foreach (var (key, navigationItem) in value.VisableFooterItems)
-        {
-            navigationItem.Clicked += ItemOnClicked;
-            navigationItem.Footer = true;
-
-            dictionary.Add(key, navigationItem);
-        }
-
-        foreach (var (key, navigationItem) in value.HiddenItemsItems)
-        {
-            navigationItem.HiddenItem = true;
-            navigationItem.Clicked += ItemOnClicked;
-
-            dictionary.Add(key, navigationItem);
-        }
+        AddToDictionary(value.VisibleItems, ref dictionary, false, false);
+        AddToDictionary(value.VisibleFooterItems, ref dictionary, false, true);
+        AddToDictionary(value.HiddenItemsItems, ref dictionary, true, false);
 
         _allItems = new ReadOnlyDictionary<string, INavigationItem>(dictionary);
 
 
         if (value.PagesTypes.Count > 0)
-            _pagesTypes = value.PagesTypes.ToDictionary<Type?, Type, Page?>(type => type, type => null);
+            _pagesTypes = value.PagesTypes.ToDictionary<Type?, Type, Page?>(type => type!, type => null);
     }
 
     #region Variables
@@ -86,18 +98,30 @@ public class DefaultNavigation : INavigation, IDisposable
 
     #endregion
 
-    #region Public Properties
+    #region Properties
 
+    /// <summary>
+    /// 
+    /// </summary>
     public IEnumerable<INavigationItem> Items => _allItems.Values.Where(item => !item.Footer && !item.HiddenItem);
 
+    /// <summary>
+    /// 
+    /// </summary>
     public IEnumerable<INavigationItem> Footer => _allItems.Values.Where(item => item.Footer && !item.HiddenItem);
 
+    /// <summary>
+    /// 
+    /// </summary>
     public bool ReadyToNavigateBack => _history.Count > 1;
 
     #endregion
 
     #region Public methods 
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void Dispose()
     {
         foreach (var item in _allItems.Values)
@@ -107,6 +131,10 @@ public class DefaultNavigation : INavigation, IDisposable
             _frame.Navigating -= FrameOnNavigating;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="frame"></param>
     public void AddFrame(Frame frame)
     {
         _frame = frame;
@@ -116,6 +144,10 @@ public class DefaultNavigation : INavigation, IDisposable
         NavigateTo(_startupPageTag);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="tag"></param>
     public void Flush(string? tag = null)
     {
         if (tag is null)
@@ -132,44 +164,53 @@ public class DefaultNavigation : INavigation, IDisposable
         _allItems[tag].Instance = null;
     }
 
-    public void NavigateTo(string pageTag, object[]? args = null, bool refresh = false)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pageTag"></param>
+    /// <param name="args"></param>
+    /// <param name="refresh"></param>
+    /// <returns></returns>
+    public Task NavigateTo(string pageTag, object[]? args = null, bool refresh = false)
     {
         if (string.IsNullOrEmpty(pageTag) || _frame is null)
-            return;
+            return Task.CompletedTask;
 
         if (pageTag == "..")
-        {
-            NavigateBack();
-            return;
-        }
+            return NavigateBack();
 
         bool? addToNavigationStack = pageTag.Contains("//");
         if (addToNavigationStack == true)
             pageTag = pageTag.Replace("//", string.Empty).Trim();
 
         if (!_allItems.ContainsKey(pageTag))
-            return;
+            return Task.CompletedTask;
 
         var item = _allItems[pageTag];
         if (item.HiddenItem && addToNavigationStack == false)
             addToNavigationStack = null;
 
-        NavigateToItem(ref item, ref args, refresh, addToNavigationStack);
+        return NavigateToItem(item, args, refresh, addToNavigationStack);
     }
 
-    public void NavigateBack(object[]? args = null)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    public Task NavigateBack(object[]? args = null)
     {
-        if (_history.Count <= 1) return;
+        if (_history.Count <= 1) return Task.CompletedTask;
 
         var item = _history[^2];
-        NavigateToItem(ref item, ref args, addToNavigationStack:item.HiddenItem && _navigationStack.Count > 1, isBackNavigated:true);
+        return NavigateToItem(item, args, addToNavigationStack:item.HiddenItem && _navigationStack.Count > 1, isBackNavigated:true);
     }
 
     #endregion
 
     #region PrivateMethods
 
-    private void NavigateToItem(ref INavigationItem item, ref object[]? args, bool refresh = false, bool? addToNavigationStack = false, bool isBackNavigated = false)
+    private async Task NavigateToItem(INavigationItem item, object[]? args, bool refresh = false, bool? addToNavigationStack = false, bool isBackNavigated = false)
     {
         switch (_navigationStack.Count)
         {
@@ -192,9 +233,7 @@ public class DefaultNavigation : INavigation, IDisposable
         }
 
         if (item.Instance is null || refresh)
-        {
             item.Instance = GetPageInstance(item.PageType, refresh);
-        }
 
         var navigationStackCount = _navigationStack.Count;
         if (navigationStackCount > 1)
@@ -218,14 +257,13 @@ public class DefaultNavigation : INavigation, IDisposable
         }
 
         _history.Add(item);
+        OnNavigated(previousNavigationItem);
+        _frame!.Navigate(item.Instance);
 
         if (item.Instance!.DataContext is not null)
-            InvokeINavigableMethod(previousNavigationItem, item.Instance.DataContext!, ref args);
+            await InvokeINavigableMethod(previousNavigationItem, item.Instance.DataContext!, args);
 
-        InvokeINavigableMethod(previousNavigationItem, item.Instance!, ref args);
-        OnNavigated(previousNavigationItem);
-
-        _frame!.Navigate(item.Instance);
+        await InvokeINavigableMethod(previousNavigationItem, item.Instance!, args);
     }
 
     private void ClearNavigationStack(int itemIndex)
@@ -240,20 +278,20 @@ public class DefaultNavigation : INavigation, IDisposable
             _navigationStack.Remove(item);
     }
 
-    private void ItemOnClicked(object? sender, EventArgs e)
+    private async void ItemOnClicked(object? sender, EventArgs e)
     {
         var item = (sender as INavigationItem)!;
 
         object[]? args = null;
-        NavigateToItem(ref item, ref args, isBackNavigated: _navigationStack.Count > 1 && _navigationStack[^1].HiddenItem);
+        await NavigateToItem(item, args, isBackNavigated: _navigationStack.Count > 1 && _navigationStack[^1].HiddenItem);
     }
 
-    private void InvokeINavigableMethod(in INavigationItem previousNavigationItem, in object instance, ref object[]? args)
+    private Task InvokeINavigableMethod(in INavigationItem previousNavigationItem, object instance, object[]? args)
     {
-        if (!instance.GetType().IsAssignableTo(typeof(INavigable))) return;
+        if (!instance.GetType().IsAssignableTo(typeof(INavigable))) return Task.CompletedTask;
 
         var navigable = (INavigable)instance;
-        navigable.OnNavigationRequest(this, previousNavigationItem, ref args);
+        return navigable.OnNavigationRequest(this, previousNavigationItem.PageTag, args);
     }
 
     private static void FrameOnNavigating(object sender, NavigatingCancelEventArgs e)
@@ -276,14 +314,32 @@ public class DefaultNavigation : INavigation, IDisposable
         return _pagesTypes[pageType]!;
     }
 
+    private void AddToDictionary(in INavigationItem[] items, ref Dictionary<string, INavigationItem> dictionary, bool hiddenItem, bool footer)
+    {
+        foreach (var item in items)
+        {
+            if (hiddenItem)
+                item.HiddenItem = true;
+
+            if (footer)
+                item.Footer = true;
+
+            item.Clicked += ItemOnClicked;
+            dictionary.Add(item.PageTag, item);
+        }
+    }
+
     #endregion
 
     #region Events
 
+    /// <summary>
+    /// 
+    /// </summary>
     public event EventHandler<NavigatedEventArgs>? Navigated;
     private void OnNavigated(INavigationItem previousNavigationItem)
     {
-        Navigated?.Invoke(this, new NavigatedEventArgs(previousNavigationItem, _navigationStack[^1], _navigationStack));
+        Navigated?.Invoke(this, new NavigatedEventArgs(previousNavigationItem.PageTag, _navigationStack[^1].PageTag, _navigationStack));
     }
 
     #endregion

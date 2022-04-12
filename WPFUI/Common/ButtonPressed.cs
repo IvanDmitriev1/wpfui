@@ -1,5 +1,8 @@
 ﻿namespace WPFUI.Common;
 
+/// <summary>
+/// 
+/// </summary>
 public enum ButtonPressed
 {
     /// <summary>

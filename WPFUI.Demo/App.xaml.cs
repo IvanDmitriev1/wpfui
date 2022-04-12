@@ -73,42 +73,36 @@ public partial class App : Application
 
             configuration.StartupPageTag = nameof(Dashboard);
 
-            configuration.VisableItems = new Dictionary<string, INavigationItem>()
+            configuration.VisibleItems = new INavigationItem[]
             {
-                {nameof(Dashboard), new DefaultNavigationItem(typeof(Dashboard), new Uri("pack://application:,,,/Assets/microsoft-shell-desktop.ico"))},
-                {nameof(Forms), new DefaultNavigationItem(typeof(Forms), new Uri("pack://application:,,,/Assets/microsoft-shell-accessibility.ico"))},
-                {nameof(Views.Pages.Controls), new DefaultNavigationItem(typeof(Views.Pages.Controls), new Uri("pack://application:,,,/Assets/microsoft-shell-settings.ico"))},
-                {nameof(Actions), new DefaultNavigationItem(typeof(Actions), new Uri("pack://application:,,,/Assets/microsoft-shell-workspace.ico"))},
-                {nameof(Colors), new DefaultNavigationItem(typeof(Colors), new Uri("pack://application:,,,/Assets/microsoft-shell-colors.ico"))},
-                {nameof(Icons), new DefaultNavigationItem(typeof(Icons), new Uri("pack://application:,,,/Assets/microsoft-shell-gallery.ico"))},
-                {nameof(WindowsPage), new DefaultNavigationItem(typeof(WindowsPage), new Uri("pack://application:,,,/Assets/microsoft-shell-monitor.ico"))}
+                new DefaultNavigationItem(typeof(Dashboard), nameof(Dashboard), new Uri("pack://application:,,,/Assets/microsoft-shell-desktop.ico")),
+                new DefaultNavigationItem(typeof(Forms), nameof(Forms), new Uri("pack://application:,,,/Assets/microsoft-shell-accessibility.ico")),
+                new DefaultNavigationItem(typeof(Views.Pages.Controls), nameof(Views.Pages.Controls), new Uri("pack://application:,,,/Assets/microsoft-shell-settings.ico")),
+                new DefaultNavigationItem(typeof(Actions), nameof(Actions), new Uri("pack://application:,,,/Assets/microsoft-shell-workspace.ico")),
+                new DefaultNavigationItem(typeof(Colors), nameof(Colors), new Uri("pack://application:,,,/Assets/microsoft-shell-colors.ico")),
+                new DefaultNavigationItem(typeof(Icons), nameof(Icons), new Uri("pack://application:,,,/Assets/microsoft-shell-gallery.ico")),
+                new DefaultNavigationItem(typeof(WindowsPage), nameof(WindowsPage), new Uri("pack://application:,,,/Assets/microsoft-shell-monitor.ico")),
             };
-
-            /*configuration.HiddenItemsItems = new Dictionary<string, INavigationItem>()
-            {
-                {nameof(Page1), new DefaultNavigationItem(typeof(Page1))},
-                {nameof(Page2), new DefaultNavigationItem(typeof(Page2))},
-                {nameof(Page3), new DefaultNavigationItem(typeof(Page3))},
-            };*/
         });
+
 
         collection.Configure<StoreNavigationItemConfiguration>(configuration =>
         {
             configuration.StartupPageTag = nameof(DashboardStore);
 
-            configuration.VisableItems = new Dictionary<string, INavigationItem>()
+            configuration.VisibleItems = new INavigationItem[]
             {
-                {nameof(DashboardStore), new StoreNavigationItem(typeof(DashboardStore), "Dashboard", Icon.Home24)},
-                {"Apps", new StoreNavigationItem(typeof(Forms), "Apps", Icon.Apps24)},
-                {nameof(Views.Pages.Controls), new StoreNavigationItem(typeof(Views.Pages.Controls), Icon.ResizeLarge24)},
-                {"Games", new StoreNavigationItem(typeof(Actions), Icon.Games24)},
-                {nameof(Colors), new StoreNavigationItem(typeof(Colors), Icon.Color24)},
+                new DefaultNavigationItem(typeof(DashboardStore), nameof(DashboardStore), "Dashboard", Icon.Home24),
+                new DefaultNavigationItem(typeof(Forms), "Apps", "Apps", Icon.Home24),
+                new DefaultNavigationItem(typeof(Views.Pages.Controls), nameof(Views.Pages.Controls), Icon.ResizeLarge24),
+                new DefaultNavigationItem(typeof(Actions), "Games", Icon.Games24),
+                new DefaultNavigationItem(typeof(Colors), nameof(Colors), Icon.Color24),
             };
 
-            configuration.VisableFooterItems = new Dictionary<string, INavigationItem>()
+            configuration.VisibleFooterItems = new INavigationItem[]
             {
-                {"Library", new StoreNavigationItem(typeof(DashboardStore), Icon.Library24)},
-                {"Help", new StoreNavigationItem(typeof(DashboardStore),Icon.QuestionCircle24 )},
+                new DefaultNavigationItem(typeof(DashboardStore), "Library", Icon.Library24),
+                new DefaultNavigationItem(typeof(DashboardStore), "Help", Icon.QuestionCircle24),
             };
         });
 

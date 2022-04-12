@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,13 +47,15 @@ public partial class WindowsPage : Page, INavigable
         _serviceProvider.GetRequiredService<Backdrop>().Show();
     }
 
-    public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[] ars)
-    {
-        System.Diagnostics.Debug.WriteLine("Page with window selectors loaded.");
-    }
-
     private void CardTaskManager_Click(object sender, RoutedEventArgs e)
     {
         _serviceProvider.GetRequiredService<TaskManager>().Show();
+    }
+
+    public Task OnNavigationRequest(INavigation navigation, string previousPageTag, object[] ars)
+    {
+        System.Diagnostics.Debug.WriteLine("Page with window selectors loaded.");
+
+        return Task.CompletedTask;
     }
 }
