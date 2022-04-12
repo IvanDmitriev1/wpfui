@@ -22,7 +22,7 @@ public class DefaultNavigationItem : ObservableObject, INavigationItem
     /// <param name="pageTag"></param>
     /// <param name="icon"></param>
     /// <param name="iconFilled"></param>
-    public DefaultNavigationItem(Type pageType, string pageTag, string text, Common.Icon icon, bool iconFilled = false)
+    public DefaultNavigationItem(Type pageType, string pageTag, string text, Common.Icon icon = Common.Icon.Empty, bool iconFilled = false)
     {
         PageType = pageType;
         Text = text;
@@ -40,20 +40,10 @@ public class DefaultNavigationItem : ObservableObject, INavigationItem
     /// 
     /// </summary>
     /// <param name="pageType"></param>
-    /// <param name="text"></param>
-    /// <param name="pageTag"></param>
-    public DefaultNavigationItem(Type pageType, string pageTag, string text) : this(pageType, text, pageTag, Common.Icon.Empty)
-    {
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="pageType"></param>
     /// <param name="pageTag"></param>
     /// <param name="text"></param>
     /// <param name="imageUri"></param>
-    public DefaultNavigationItem(Type pageType, string pageTag, string text, Uri imageUri) : this(pageType, text, pageTag, Common.Icon.Empty)
+    public DefaultNavigationItem(Type pageType, string pageTag, string text, Uri imageUri) : this(pageType, text, pageTag)
     {
         Image = new BitmapImage(imageUri);
     }
