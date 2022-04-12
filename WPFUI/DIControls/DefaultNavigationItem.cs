@@ -56,7 +56,6 @@ public class DefaultNavigationItem : ObservableObject, INavigationItem
 
     public Type PageType { get; }
     public string Text { get; }
-    public string Tag { get; }
     public bool HiddenItem { get; set; }
     public bool Footer { get; set; }
 

@@ -184,8 +184,6 @@ namespace WPFUI.Controls
         {
             if (d is not NumberBox control) return;
 
-            if (!String.IsNullOrEmpty(control.Text)) return;
-
             if (control.Value % 1 != 0 && !control.IntegersOnly)
                 control.Text = control.Value.ToString("F" + control.DecimalPlaces, CultureInfo.InvariantCulture);
             else

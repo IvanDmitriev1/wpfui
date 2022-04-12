@@ -213,12 +213,11 @@ public class DefaultNavigation : INavigation, IDisposable
         var previousNavigationItem = isBackNavigated ? _history[^2] : _navigationStack[^1];
         if (isBackNavigated)
         {
-            _history.Remove(previousNavigationItem);
-            _history.Remove(_history[^1]);
+            _history.RemoveAt(_history.LastIndexOf(previousNavigationItem));
+            _history.RemoveAt(_history.LastIndexOf(_history[^1]));
         }
 
-        if (!_history.Contains(item))
-            _history.Add(item);
+        _history.Add(item);
 
         if (item.Instance!.DataContext is not null)
             InvokeINavigableMethod(previousNavigationItem, item.Instance.DataContext!, ref args);
