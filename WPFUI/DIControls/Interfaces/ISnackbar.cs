@@ -16,5 +16,5 @@ public interface ISnackbar : IIconControl
     /// <param name="icon"></param>
     /// <param name="timeout"></param>
     /// <param name="title"></param>
-    public void Expand(string message, Icon icon = Icon.Empty, int? timeout = null, string? title = null);
+    public void Expand(string message, SymbolRegular icon = SymbolRegular.Empty, int? timeout = null, string? title = null);
 }

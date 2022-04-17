@@ -79,7 +79,7 @@
                                 BorderThickness="0"
                                 Command="{Binding Path=BackButtonCommand, RelativeSource={RelativeSource TemplatedParent}}"
                                 ToolTip="Back">
-                                <controls:Icon FontSize="16" Glyph="ArrowLeft48" />
+                                <controls:SymbolIcon FontSize="16" Symbol="ArrowLeft48" />
                             </controls:Button>
 
                             <Image
@@ -188,7 +188,7 @@
                             <Setter TargetName="ButtonMaximize" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="ShowHelp" Value="False">
-                            <Setter TargetName="ButtonHelp" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="ButtonHelp" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

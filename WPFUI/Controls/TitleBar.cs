@@ -202,7 +202,6 @@ namespace WPFUI.Controls
             {
                 SetValue(NavigationProperty, value);
                 value!.Navigated += OnNavigated;
-                ApplicationNavigation = true;
             }
         }
 

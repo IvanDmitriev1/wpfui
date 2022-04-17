@@ -29,7 +29,7 @@
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/NavigationCompact.xaml" />
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/Breadcrumb.xaml" />
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/FontIcon.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/Icon.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/SymbolIcon.xaml" />
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/Hyperlink.xaml" />
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/CodeBlock.xaml" />
         <ResourceDictionary Source="pack://application:,,,/WPFUI;component/Styles/Controls/Card.xaml" />

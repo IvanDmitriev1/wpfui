@@ -9,7 +9,7 @@ namespace WPFUI.DIControls;
 public sealed class StoreNavigationItem : DefaultNavigationItem
 {
     /// <inheritdoc />
-    public StoreNavigationItem(Type pageType, string pageTag, string text, Icon icon, bool iconFilled = false) : base(pageType, pageTag, text, icon, iconFilled)
+    public StoreNavigationItem(Type pageType, string pageTag, string text, SymbolRegular icon, bool iconFilled = false) : base(pageType, pageTag, text, icon, iconFilled)
     {
     }
 
@@ -29,7 +29,7 @@ public sealed class StoreNavigationItem : DefaultNavigationItem
     }
 
     /// <inheritdoc />
-    public StoreNavigationItem(Type pageType, string pageTag, Icon icon) : base(pageType, pageTag, icon)
+    public StoreNavigationItem(Type pageType, string pageTag, SymbolRegular icon) : base(pageType, pageTag, icon)
     {
     }
 }

@@ -34,14 +34,14 @@ public partial class Snackbar : ObservableObject, ISnackbar
         _defaultTitle = configuration.Title;
         _timeout = configuration.Timeout;
         _slideTransform = configuration.SlideTransform;
-        _icon = Icon.Empty;
+        _icon = SymbolRegular.Empty;
     }
 
     private readonly int _timeout;
     private readonly string _defaultTitle;
     private readonly EventIdentifier _identifier;
 
-    private Icon _icon;
+    private SymbolRegular _icon;
     private bool _iconFilled;
 
     #region ObservableProperties
@@ -58,9 +58,9 @@ public partial class Snackbar : ObservableObject, ISnackbar
     [ObservableProperty]
     private TranslateTransform _slideTransform;
 
-    public Thickness IconMargin => Icon == Icon.Empty ? new Thickness(0) : new Thickness(0, 0, 12, 0);
+    public Thickness IconMargin => Icon == SymbolRegular.Empty ? new Thickness(0) : new Thickness(0, 0, 12, 0);
 
-    public Icon Icon
+    public SymbolRegular Icon
     {
         get => _icon;
         set
@@ -104,7 +104,7 @@ public partial class Snackbar : ObservableObject, ISnackbar
         if (timeout < 1)
             Show = false;
 
-        uint currentEvent = _identifier.GetNext();
+        var currentEvent = _identifier.GetNext();
 
         await Task.Delay(timeout);
 
@@ -115,7 +115,7 @@ public partial class Snackbar : ObservableObject, ISnackbar
             Show = false;
     }
 
-    private void SetValues(in string message, Icon icon = Icon.Empty, in string? title = null)
+    private void SetValues(in string message, SymbolRegular icon = SymbolRegular.Empty, in string? title = null)
     {
         Title = title ?? _defaultTitle;
         Message = message;
@@ -129,7 +129,7 @@ public partial class Snackbar : ObservableObject, ISnackbar
     /// <param name="icon"></param>
     /// <param name="title"></param>
     /// <param name="timeout"></param>
-    public async void Expand(string message, Icon icon = Icon.Empty, int? timeout = null, string? title = null)
+    public async void Expand(string message, SymbolRegular icon = SymbolRegular.Empty, int? timeout = null, string? title = null)
     {
         if (Show)
         {

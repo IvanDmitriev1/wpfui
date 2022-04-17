@@ -5,9 +5,9 @@
 
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
+using WPFUI.Common;
 using WPFUI.Controls;
 using WPFUI.DIControls.Interfaces;
-using Icon = WPFUI.Common.Icon;
 
 namespace WPFUI.Demo.Views.Pages;
 
@@ -87,21 +87,22 @@ public partial class Controls : Page
 
     private void Button_ShowSnackbar_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        _snackbarResolver.Invoke().Expand("Remember that the Heat Death of Universe is coming someday, no time to explain - let's go!", Icon.PuzzlePiece24, 2000);
+        _snackbarResolver.Invoke().Expand("Remember that the Heat Death of Universe is coming someday, no time to explain - let's go!", SymbolRegular.PuzzlePiece24, 2000);
 
         //(((Container)System.Windows.Application.Current.MainWindow)!).RootSnackbar.Expand();
     }
 
     private void Button_ShowBox_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        WPFUI.Controls.MessageBox messageBox = new WPFUI.Controls.MessageBox();
-
-        messageBox.ButtonLeftName = "Hello World";
-        messageBox.ButtonRightName = "Just close me";
+        WPFUI.Controls.MessageBox messageBox = new WPFUI.Controls.MessageBox
+        {
+            ButtonLeftName = "Hello World",
+            ButtonRightName = "Just close me"
+        };
 
         messageBox.ButtonLeftClick += MessageBox_LeftButtonClick;
         messageBox.ButtonRightClick += MessageBox_RightButtonClick;
-        
+
         messageBox.Show("Something weird", "May happen");
     }
 
@@ -118,62 +119,29 @@ public partial class Controls : Page
         });
         contextMenu.Items.Add(new MenuItem()
         {
-            Header = "With Icon",
-            Icon = WPFUI.Common.Icon.TextBox16
+            Header = "With SymbolRegular",
+            Icon = WPFUI.Common.SymbolRegular.Library24
         });
         contextMenu.Items.Add(new MenuItem()
         {
             Header = "Deactivated",
+            Icon = WPFUI.Common.SymbolRegular.WindowAdOff20,
             IsEnabled = false
         });
         MenuItem subMenu = new MenuItem()
         {
-            Header = "SubMenu"
+            Header = "SubMenu",
+            Icon = WPFUI.Common.SymbolRegular.Timeline24,
         };
         subMenu.Items.Add(new MenuItem()
-            //CREATE PROGRAMMATICALLY
-            //Right now it is not possible to open the ContextMenu from CodeBehind (ContextMenu.IsOpen = true) because when it is not created again after a Theme-Change it will not use the new Theme
-            //Without creating it in CodeBehing the Theme-Change during Runtime would therefore not have any affect on the ContextMenu until you force it to rebuild by opening it through a Right-Click onto it's host-card
-            //Comment and temporary fix by https://github.com/ParzivalExe
-            ContextMenu contextMenu = new ContextMenu();
-            contextMenu.Items.Add(new MenuItem()
-            {
-                Header = "Normal Item"
-            });
-            contextMenu.Items.Add(new MenuItem()
-            {
-                Header = "With SymbolRegular",
-                Icon = WPFUI.Common.SymbolRegular.Library24
-            });
-            contextMenu.Items.Add(new MenuItem()
-            {
-                Header = "Deactivated",
-                Icon = WPFUI.Common.SymbolRegular.WindowAdOff20,
-                IsEnabled = false
-            });
-            MenuItem subMenu = new MenuItem()
-            {
-                Header = "SubMenu",
-                Icon = WPFUI.Common.SymbolRegular.Timeline24,
-            };
-            subMenu.Items.Add(new MenuItem()
-            {
-                Header = "Item 1",
-                Icon = WPFUI.Common.SymbolRegular.Balloon24,
-            });
-            subMenu.Items.Add(new MenuItem()
-            {
-                Header = "Item 2",
-                Icon = WPFUI.Common.SymbolRegular.CubeLink20,
-            });
-            contextMenu.Items.Add(subMenu);
-
-            contextMenu.IsOpen = true;
-        }
-
+        {
+            Header = "Item 1",
+            Icon = WPFUI.Common.SymbolRegular.Balloon24,
+        });
         subMenu.Items.Add(new MenuItem()
         {
-            Header = "Item 2"
+            Header = "Item 2",
+            Icon = WPFUI.Common.SymbolRegular.CubeLink20,
         });
         contextMenu.Items.Add(subMenu);
 

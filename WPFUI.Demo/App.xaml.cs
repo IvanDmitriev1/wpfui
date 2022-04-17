@@ -92,17 +92,17 @@ public partial class App : Application
 
             configuration.VisibleItems = new INavigationItem[]
             {
-                new DefaultNavigationItem(typeof(DashboardStore), nameof(DashboardStore), "Dashboard", Icon.Home24),
-                new DefaultNavigationItem(typeof(Forms), "Apps", "Apps", Icon.Home24),
-                new DefaultNavigationItem(typeof(Views.Pages.Controls), nameof(Views.Pages.Controls), Icon.ResizeLarge24),
-                new DefaultNavigationItem(typeof(Actions), "Games", Icon.Games24),
-                new DefaultNavigationItem(typeof(Colors), nameof(Colors), Icon.Color24),
+                new DefaultNavigationItem(typeof(DashboardStore), nameof(DashboardStore), "Dashboard", SymbolRegular.Home24),
+                new DefaultNavigationItem(typeof(Forms), "Apps", "Apps", SymbolRegular.Home24),
+                new DefaultNavigationItem(typeof(Views.Pages.Controls), nameof(Views.Pages.Controls), SymbolRegular.ResizeLarge24),
+                new DefaultNavigationItem(typeof(Actions), "Games", SymbolRegular.Games24),
+                new DefaultNavigationItem(typeof(Colors), nameof(Colors), SymbolRegular.Color24),
             };
 
             configuration.VisibleFooterItems = new INavigationItem[]
             {
-                new DefaultNavigationItem(typeof(DashboardStore), "Library", Icon.Library24),
-                new DefaultNavigationItem(typeof(DashboardStore), "Help", Icon.QuestionCircle24),
+                new DefaultNavigationItem(typeof(DashboardStore), "Library", SymbolRegular.Library24),
+                new DefaultNavigationItem(typeof(DashboardStore), "Help", SymbolRegular.QuestionCircle24),
             };
         });
 

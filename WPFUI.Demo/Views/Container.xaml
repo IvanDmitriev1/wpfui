@@ -4,9 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:diControls="clr-namespace:WPFUI.DIControls;assembly=WPFUI"
-    xmlns:local="clr-namespace:WPFUI.Demo.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pages="clr-namespace:WPFUI.Demo.Views.Pages"
     xmlns:wpfui="clr-namespace:WPFUI.Controls;assembly=WPFUI"
     xmlns:wpfuiCommon="clr-namespace:WPFUI.Common;assembly=WPFUI"
     Name="MainWindow"
@@ -133,7 +131,6 @@
             x:Name="RootTitleBar"
             Title="WPFUI"
             Grid.Row="0"
-            ApplicationNavigation="True"
             MinimizeClicked="TitleBar_OnMinimizeClicked"
             MinimizeToTray="True"
             NotifyIconClick="RootTitleBar_OnNotifyIconClick"
@@ -146,23 +143,23 @@
                     <MenuItem
                         Click="TrayMenuItem_OnClick"
                         Header="Home"
-                        Icon="{x:Static wpfuiCommon:Icon.Library28}"
+                        Icon="{x:Static wpfuiCommon:SymbolRegular.Library28}"
                         Tag="home" />
                     <MenuItem
                         Click="TrayMenuItem_OnClick"
                         Header="Save"
-                        Icon="{x:Static wpfuiCommon:Icon.Save24}"
+                        Icon="{x:Static wpfuiCommon:SymbolRegular.Save24}"
                         Tag="save" />
                     <MenuItem
                         Click="TrayMenuItem_OnClick"
                         Header="Open"
-                        Icon="{x:Static wpfuiCommon:Icon.Folder28}"
+                        Icon="{x:Static wpfuiCommon:SymbolRegular.Folder28}"
                         Tag="open" />
                     <Separator />
                     <MenuItem
                         Click="TrayMenuItem_OnClick"
                         Header="Reload"
-                        Icon="{x:Static wpfuiCommon:Icon.ArrowClockwise24}"
+                        Icon="{x:Static wpfuiCommon:SymbolRegular.ArrowClockwise24}"
                         Tag="reload" />
                 </ContextMenu>
             </wpfui:TitleBar.NotifyIconMenu>

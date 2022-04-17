@@ -90,12 +90,12 @@
                                 DataContext="{TemplateBinding Property=FirstNavigationItem}"
                                 Style="{StaticResource UiBreadcrumbButton}" />
 
-                            <controls:Icon
+                            <controls:SymbolIcon
                                 x:Name="Icon"
                                 Grid.Column="1"
                                 Margin="10,0,0,0"
                                 FontSize="16"
-                                Glyph="ChevronRight24" />
+                                Symbol="ChevronRight24" />
                         </Grid>
 
                         <ItemsControl

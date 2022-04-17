@@ -78,13 +78,13 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <controls:Icon
+                <controls:SymbolIcon
                     Grid.Column="0"
                     Margin="{Binding Path=IconMargin}"
                     VerticalAlignment="Center"
                     Filled="{Binding IconFilled}"
                     FontSize="26"
-                    Glyph="{Binding Path=Icon}" />
+                    Symbol="{Binding Path=Icon}" />
 
                 <StackPanel
                     Grid.Column="1"
@@ -109,7 +109,7 @@
                     Padding="6"
                     Appearance="Secondary"
                     Command="{Binding Path=ButtonCloseCommand}">
-                    <controls:Icon Glyph="Dismiss48" />
+                    <controls:SymbolIcon Symbol="Dismiss48" />
                 </controls:Button>
             </Grid>
         </Border>

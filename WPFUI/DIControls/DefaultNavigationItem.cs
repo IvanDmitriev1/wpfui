@@ -22,7 +22,7 @@ public class DefaultNavigationItem : ObservableObject, INavigationItem
     /// <param name="pageTag"></param>
     /// <param name="icon"></param>
     /// <param name="iconFilled"></param>
-    public DefaultNavigationItem(Type pageType, string pageTag, string text, Common.Icon icon = Common.Icon.Empty, bool iconFilled = false)
+    public DefaultNavigationItem(Type pageType, string pageTag, string text, SymbolRegular icon = SymbolRegular.Empty, bool iconFilled = false)
     {
         PageType = pageType;
         Text = text;
@@ -74,7 +74,7 @@ public class DefaultNavigationItem : ObservableObject, INavigationItem
     /// <param name="pageType"></param>
     /// <param name="pageTag"></param>
     /// <param name="icon"></param>
-    public DefaultNavigationItem(Type pageType, string pageTag, Icon icon) : this(pageType, pageTag, pageType.Name, icon)
+    public DefaultNavigationItem(Type pageType, string pageTag, SymbolRegular icon) : this(pageType, pageTag, pageType.Name, icon)
     {
     }
 
@@ -119,7 +119,7 @@ public class DefaultNavigationItem : ObservableObject, INavigationItem
     /// <summary>
     /// 
     /// </summary>
-    public Icon Icon { get; set; }
+    public SymbolRegular Icon { get; set; }
     /// <summary>
     /// 
     /// </summary>
