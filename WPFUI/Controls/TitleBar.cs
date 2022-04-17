@@ -59,10 +59,10 @@ namespace WPFUI.Controls
             typeof(bool), typeof(TitleBar), new PropertyMetadata(false));
 
         /// <summary>
-        /// Property for <see cref="ApplicationNavigation"/>.
+        /// Property for <see cref="ForceShutdown"/>.
         /// </summary>
-        public static readonly DependencyProperty ApplicationNavigationProperty =
-            DependencyProperty.Register(nameof(ApplicationNavigation), typeof(bool), typeof(TitleBar),
+        public static readonly DependencyProperty ForceShutdownProperty =
+            DependencyProperty.Register(nameof(ForceShutdown), typeof(bool), typeof(TitleBar),
                 new PropertyMetadata(false));
 
         /// <summary>
@@ -85,6 +85,13 @@ namespace WPFUI.Controls
         public static readonly DependencyProperty ShowHelpProperty = DependencyProperty.Register(
             nameof(ShowHelp),
             typeof(bool), typeof(TitleBar), new PropertyMetadata(false));
+
+        /// <summary>
+        /// Property for <see cref="CanMaximize"/>
+        /// </summary>
+        public static readonly DependencyProperty CanMaximizeProperty = DependencyProperty.Register(
+            nameof(CanMaximize),
+            typeof(bool), typeof(TitleBar), new PropertyMetadata(true));
 
         /// <summary>
         /// Property for <see cref="Icon"/>.
@@ -248,10 +255,10 @@ namespace WPFUI.Controls
         /// <summary>
         /// Gets or sets information whether the controls affect main application window.
         /// </summary>
-        public bool ApplicationNavigation
+        public bool ForceShutdown
         {
-            get => (bool)GetValue(ApplicationNavigationProperty);
-            set => SetValue(ApplicationNavigationProperty, value);
+            get => (bool)GetValue(ForceShutdownProperty);
+            set => SetValue(ForceShutdownProperty, value);
         }
 
         /// <summary>
@@ -279,6 +286,15 @@ namespace WPFUI.Controls
         {
             get => (bool)GetValue(ShowHelpProperty);
             set => SetValue(ShowHelpProperty, value);
+        }
+
+        /// <summary>
+        /// Enables or disables the maximize functionality if disables the MaximizeActionOverride action won't be called
+        /// </summary>
+        public bool CanMaximize
+        {
+            get => (bool)GetValue(CanMaximizeProperty);
+            set => SetValue(CanMaximizeProperty, value);
         }
 
         /// <summary>
@@ -390,7 +406,17 @@ namespace WPFUI.Controls
         /// </summary>
         public Common.IRelayCommand ButtonCommand => (Common.IRelayCommand)GetValue(ButtonCommandProperty);
 
-        private Window? ParentWindow => _parent ??= Window.GetWindow(this);
+        /// <summary>
+        /// Lets you override the behavior of the Maximize/Restore button with an <see cref="Action"/>.
+        /// </summary>
+        public Action<TitleBar, Window> MaximizeActionOverride { get; set; } = null;
+
+        /// <summary>
+        /// Lets you override the behavior of the Minimize button with an <see cref="Action"/>.
+        /// </summary>
+        public Action<TitleBar, Window> MinimizeActionOverride { get; set; } = null;
+
+        private Window ParentWindow => _parent ??= Window.GetWindow(this);
 
         /// <summary>
         /// Creates a new instance of the class and sets the default <see cref="FrameworkElement.Loaded"/> event.
@@ -422,18 +448,37 @@ namespace WPFUI.Controls
         }
 
         /// <summary>
+        /// Disposes icon if exists.
+        /// </summary>
+        ~TitleBar()
+        {
+            _notifyIcon?.Dispose();
+        }
+
+        /// <summary>
         /// Resets icon.
         /// </summary>
         public void ResetIcon()
         {
-            _notifyIcon?.Destroy();
+            _notifyIcon?.Dispose();
 
             InitializeNotifyIcon();
         }
 
         private void CloseWindow()
         {
-            if (CloseToTray && UseNotifyIcon && MinimizeWindowToTray()) return;
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine($"INFO | {typeof(TitleBar)}.CloseWindow:ForceShutdown -  {ForceShutdown}");
+#endif
+
+            if (ForceShutdown)
+            {
+                Application.Current.Shutdown();
+
+                return;
+            }
+			
+			 if (CloseToTray && UseNotifyIcon && MinimizeWindowToTray()) return;
 
             ParentWindow!.Close();
         }
@@ -447,7 +492,18 @@ namespace WPFUI.Controls
 
         private void MaximizeWindow()
         {
-            if (ParentWindow!.WindowState == WindowState.Normal)
+
+            if (!CanMaximize)
+                return;
+
+            if (MaximizeActionOverride != null)
+            {
+                MaximizeActionOverride(this, _parent);
+
+                return;
+            }
+
+            if (ParentWindow.WindowState == WindowState.Normal)
             {
                 IsMaximized = true;
                 ParentWindow.WindowState = WindowState.Maximized;
@@ -571,10 +627,9 @@ namespace WPFUI.Controls
 
             // Call drag move only when mouse down, check again
             // if()
-            if(e.LeftButton == MouseButtonState.Pressed)
-            {
+            if (e.LeftButton == MouseButtonState.Pressed)
                 ParentWindow.DragMove();
-            }
+
         }
 
         private void ParentWindow_StateChanged(object sender, EventArgs e)
@@ -640,7 +695,7 @@ namespace WPFUI.Controls
             if (titleBar.UseNotifyIcon)
                 titleBar.ResetIcon();
             else
-                titleBar._notifyIcon.Destroy();
+                titleBar._notifyIcon.Dispose();
         }
 
         private static void NotifyIconMenu_OnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

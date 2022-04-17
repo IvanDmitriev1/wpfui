@@ -131,9 +131,46 @@ public partial class Controls : Page
             Header = "SubMenu"
         };
         subMenu.Items.Add(new MenuItem()
-        {
-            Header = "Item 1"
-        }); 
+            //CREATE PROGRAMMATICALLY
+            //Right now it is not possible to open the ContextMenu from CodeBehind (ContextMenu.IsOpen = true) because when it is not created again after a Theme-Change it will not use the new Theme
+            //Without creating it in CodeBehing the Theme-Change during Runtime would therefore not have any affect on the ContextMenu until you force it to rebuild by opening it through a Right-Click onto it's host-card
+            //Comment and temporary fix by https://github.com/ParzivalExe
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Normal Item"
+            });
+            contextMenu.Items.Add(new MenuItem()
+            {
+                Header = "With SymbolRegular",
+                Icon = WPFUI.Common.SymbolRegular.Library24
+            });
+            contextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Deactivated",
+                Icon = WPFUI.Common.SymbolRegular.WindowAdOff20,
+                IsEnabled = false
+            });
+            MenuItem subMenu = new MenuItem()
+            {
+                Header = "SubMenu",
+                Icon = WPFUI.Common.SymbolRegular.Timeline24,
+            };
+            subMenu.Items.Add(new MenuItem()
+            {
+                Header = "Item 1",
+                Icon = WPFUI.Common.SymbolRegular.Balloon24,
+            });
+            subMenu.Items.Add(new MenuItem()
+            {
+                Header = "Item 2",
+                Icon = WPFUI.Common.SymbolRegular.CubeLink20,
+            });
+            contextMenu.Items.Add(subMenu);
+
+            contextMenu.IsOpen = true;
+        }
+
         subMenu.Items.Add(new MenuItem()
         {
             Header = "Item 2"
