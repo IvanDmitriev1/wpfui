@@ -4,6 +4,7 @@
 // All Rights Reserved.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -96,11 +97,14 @@ public partial class Container : INavigationWindow
     public INavigation GetNavigation()
         => RootNavigation;
 
-    public bool Navigate(Type pageType)
-        => RootNavigation.Navigate(pageType);
+    public void NavigateTo(Type type, object dataContext = null)
+        => RootNavigation.NavigateTo(type, dataContext);
+
+    public void NavigateTo(string pageTag, object dataContext = null)
+        => RootNavigation.NavigateTo(pageTag, dataContext);
 
     public void SetPageService(IPageService pageService)
-        => RootNavigation.PageService = pageService;
+        => RootNavigation.SetIPageService(pageService);
 
     public void ShowWindow()
         => Show();
@@ -108,9 +112,10 @@ public partial class Container : INavigationWindow
     public void CloseWindow()
         => Close();
 
+
     #endregion INavigationWindow methods
 
-    private void InvokeSplashScreen()
+    private async void InvokeSplashScreen()
     {
         if (_initialized)
             return;
@@ -122,24 +127,16 @@ public partial class Container : INavigationWindow
 
         _taskBarService.SetState(this, TaskBarProgressState.Indeterminate);
 
-        Task.Run(async () =>
-        {
-            // Remember to always include Delays and Sleeps in
-            // your applications to be able to charge the client for optimizations later.
-            await Task.Delay(4000);
+        // Remember to always include Delays and Sleeps in
+        // your applications to be able to charge the client for optimizations later.
+        await Task.Delay(4000);
 
-            await Dispatcher.InvokeAsync(() =>
-            {
-                RootWelcomeGrid.Visibility = Visibility.Hidden;
-                RootMainGrid.Visibility = Visibility.Visible;
+        RootWelcomeGrid.Visibility = Visibility.Hidden;
+        RootMainGrid.Visibility = Visibility.Visible;
 
-                Navigate(typeof(Pages.Dashboard));
+        NavigateTo(typeof(Pages.Dashboard));
 
-                _taskBarService.SetState(this, TaskBarProgressState.None);
-            });
-
-            return true;
-        });
+        _taskBarService.SetState(this, TaskBarProgressState.None);
     }
 
     private void NavigationButtonTheme_OnClick(object sender, RoutedEventArgs e)
@@ -157,14 +154,16 @@ public partial class Container : INavigationWindow
 
     private void RootNavigation_OnNavigated(INavigation sender, RoutedNavigationEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine($"DEBUG | WPF UI Navigated to: {sender?.Current ?? null}", "Wpf.Ui.Demo");
+        var current = sender.NavigationStack[sender.NavigationStack.Count - 1];
+
+        System.Diagnostics.Debug.WriteLine($"DEBUG | WPF UI Navigated to: {current}", "Wpf.Ui.Demo");
 
         // This funky solution allows us to impose a negative
         // margin for Frame only for the Dashboard page, thanks
         // to which the banner will cover the entire page nicely.
         RootFrame.Margin = new Thickness(
             left: 0,
-            top: sender?.Current?.PageTag == "dashboard" ? -69 : 0,
+            top: current.PageTag == "dashboard" ? -69 : 0,
             right: 0,
             bottom: 0);
     }

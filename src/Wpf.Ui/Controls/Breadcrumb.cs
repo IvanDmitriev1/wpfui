@@ -3,8 +3,12 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
-using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
+using CommunityToolkit.Diagnostics;
 using Wpf.Ui.Common;
 using Wpf.Ui.Controls.Interfaces;
 
@@ -16,26 +20,15 @@ namespace Wpf.Ui.Controls;
 public class Breadcrumb : System.Windows.Controls.Control
 {
     /// <summary>
-    /// Property for <see cref="Current"/>.
-    /// </summary>
-    public static readonly DependencyProperty CurrentProperty = DependencyProperty.Register(nameof(Current),
-        typeof(string), typeof(Breadcrumb), new PropertyMetadata(String.Empty));
-
-    /// <summary>
     /// Property for <see cref="Navigation"/>.
     /// </summary>
     public static readonly DependencyProperty NavigationProperty = DependencyProperty.Register(nameof(Navigation),
         typeof(INavigation), typeof(Breadcrumb),
-        new PropertyMetadata(null, OnNavigationChanged));
+        new PropertyMetadata(null));
 
-    /// <summary>
-    /// <see cref="INavigation"/> based on which <see cref="Breadcrumb"/> displays the titles.
-    /// </summary>
-    public string Current
-    {
-        get => (string)GetValue(CurrentProperty);
-        set => SetValue(CurrentProperty, value);
-    }
+    public static readonly DependencyProperty BreadcrumbItemsProperty = DependencyProperty.Register(nameof(BreadcrumbItems),
+        typeof(ObservableCollection<BreadcrumbItem>), typeof(Breadcrumb), new PropertyMetadata(null));
+
 
     /// <summary>
     /// <see cref="INavigation"/> based on which <see cref="Breadcrumb"/> displays the titles.
@@ -46,35 +39,76 @@ public class Breadcrumb : System.Windows.Controls.Control
         set => SetValue(NavigationProperty, value);
     }
 
-    protected virtual void OnNavigated(INavigation sender, RoutedNavigationEventArgs e)
+    public ObservableCollection<BreadcrumbItem> BreadcrumbItems
     {
-#if DEBUG
-        System.Diagnostics.Debug.WriteLine($"INFO | {typeof(Breadcrumb)} builded, current nav: {Navigation.GetType()}", "Wpf.Ui.Breadcrumb");
-#endif
-
-        //TODO: Navigate with previous levels
-
-        if (Navigation?.Current is not INavigationItem item)
-            return;
-
-        var pageName = item.Content as string;
-
-        if (String.IsNullOrEmpty(pageName))
-            return;
-
-        Current = pageName;
+        get => (ObservableCollection<BreadcrumbItem>)GetValue(BreadcrumbItemsProperty);
+        private set => SetValue(BreadcrumbItemsProperty, value);
     }
 
-    protected virtual void OnNavigationChanged()
-    {
-        Navigation.Navigated += OnNavigated;
-    }
+    private readonly ICommand _onClickCommand;
 
-    private static void OnNavigationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    public Breadcrumb()
     {
-        if (d is not Breadcrumb breadcrumb)
+        BreadcrumbItems = new ObservableCollection<BreadcrumbItem>();
+        _onClickCommand = new RelayCommand(OnClick);
+
+        if (DesignerProperties.GetIsInDesignMode(this))
             return;
 
-        breadcrumb.OnNavigationChanged();
+        Loaded += (_, _) =>
+        {
+            Guard.IsNotNull(Navigation, nameof(Navigation));
+            Navigation.NavigationStack.CollectionChanged += NavigationStackOnCollectionChanged;
+
+            if (Navigation.NavigationStack.Count <= 0) 
+                return;
+
+            foreach (var item in Navigation.NavigationStack)
+                BreadcrumbItems.Add( BreadcrumbItem.Create(item, _onClickCommand));
+
+            BreadcrumbItems[BreadcrumbItems.Count - 1].IsActive = true;
+        };
+
+        Unloaded += (_, _) =>
+        {
+            Navigation.NavigationStack.CollectionChanged -= NavigationStackOnCollectionChanged;
+        };
+    }
+
+    private void NavigationStackOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+            {
+                var newItem = (INavigationItem) e.NewItems![0];
+                BreadcrumbItems.Add(BreadcrumbItem.Create(newItem, _onClickCommand));
+                break;
+            }
+            case NotifyCollectionChangedAction.Remove:
+                BreadcrumbItems.RemoveAt(e.OldStartingIndex);
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                var replaceItem = (INavigationItem) e.NewItems![0];
+                var breadcrumbItem = BreadcrumbItem.Create(replaceItem, _onClickCommand);
+
+                BreadcrumbItems[0] = breadcrumbItem;
+                break;
+            default:
+                return;
+        }
+
+        if (BreadcrumbItems.Count > 1)
+            BreadcrumbItems[BreadcrumbItems.Count - 2].IsActive = false;
+
+        BreadcrumbItems[BreadcrumbItems.Count - 1].IsActive = true;
+        
+    }
+
+    private void OnClick(object obj)
+    {
+        var pageTag = (string)obj;
+
+        Navigation.NavigateTo(pageTag);
     }
 }

@@ -3,8 +3,10 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+#nullable enable
 using System;
 using System.Windows.Controls;
+using CommunityToolkit.Diagnostics;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 
@@ -15,28 +17,41 @@ namespace Wpf.Ui.Mvvm.Services;
 /// </summary>
 public partial class NavigationService : INavigationService
 {
+    private INavigation? _navigationControl;
+    
     /// <summary>
     /// Locally attached page service.
     /// </summary>
-    private IPageService _pageService;
+    private IPageService? _pageService;
 
     /// <summary>
     /// Control representing navigation.
     /// </summary>
-    protected INavigation NavigationControl;
+    private INavigation NavigationControl
+    {
+        get
+        {
+            Guard.IsNotNull(_navigationControl, nameof(NavigationControl));
+            return _navigationControl;
+        }
+        set => _navigationControl = value;
+    }
+
+    public void Initialize(INavigation navigation, IPageService pageService)
+    {
+        NavigationControl = navigation;
+        NavigationControl.SetIPageService(pageService);
+    }
 
     /// <inheritdoc />
     public Frame GetFrame()
     {
-        return NavigationControl?.Frame;
+        return NavigationControl.Frame;
     }
 
     /// <inheritdoc />
     public void SetFrame(Frame frame)
     {
-        if (NavigationControl == null)
-            return;
-
         NavigationControl.Frame = frame;
     }
 
@@ -46,52 +61,34 @@ public partial class NavigationService : INavigationService
         return NavigationControl;
     }
 
-    /// <inheritdoc />
     public void SetNavigationControl(INavigation navigation)
     {
         NavigationControl = navigation;
 
-        if (_pageService != null)
-            NavigationControl.PageService = _pageService;
+        if (_pageService is not null)
+            NavigationControl.SetIPageService(_pageService);
     }
 
-    /// <inheritdoc />
     public void SetPageService(IPageService pageService)
     {
-        if (NavigationControl == null)
+        if (_navigationControl is null)
         {
             _pageService = pageService;
-
             return;
         }
 
-        NavigationControl.PageService = pageService;
+        NavigationControl.SetIPageService(pageService);
     }
 
     /// <inheritdoc />
-    public bool Navigate(Type pageType)
+    public void NavigateTo(string pageTag, object? dataContext = null)
     {
-        if (NavigationControl == null)
-            return false;
-
-        return NavigationControl.Navigate(pageType);
+        NavigationControl.NavigateTo(pageTag, dataContext);
     }
 
     /// <inheritdoc />
-    public bool Navigate(int pageId)
+    public void NavigateTo(Type type, object? dataContext = null)
     {
-        if (NavigationControl == null)
-            return false;
-
-        return NavigationControl.Navigate(pageId);
-    }
-
-    /// <inheritdoc />
-    public bool Navigate(string pageTag)
-    {
-        if (NavigationControl == null)
-            return false;
-
-        return NavigationControl.Navigate(pageTag);
+        NavigationControl.NavigateTo(type, dataContext);
     }
 }

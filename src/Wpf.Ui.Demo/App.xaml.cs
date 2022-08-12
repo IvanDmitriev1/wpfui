@@ -93,6 +93,8 @@ public partial class App
 
             services.AddScoped<Views.Pages.Icons>();
             services.AddScoped<IconsViewModel>();
+            
+            services.AddScoped<BreadcrumbPagesViewModel>();
 
             // Test windows
             services.AddTransient<Views.Windows.TaskManagerWindow>();
