@@ -90,7 +90,6 @@
     <None Remove="Controls\FontIcon.bmp" />
     <None Remove="Controls\MessageBox.bmp" />
     <None Remove="Controls\NavigationCompact.bmp" />
-    <None Remove="Controls\NavigationFluent.bmp" />
     <None Remove="Controls\NavigationHeader.bmp" />
     <None Remove="Controls\NavigationItem.bmp" />
     <None Remove="Controls\NavigationSeparator.bmp" />
@@ -128,7 +127,6 @@
     <EmbeddedResource Include="Controls\Navigation\NavigationSeparator.bmp" />
     <EmbeddedResource Include="Controls\NavigationItem.bmp" />
     <EmbeddedResource Include="Controls\Navigation\NavigationHeader.bmp" />
-    <EmbeddedResource Include="Controls\NavigationFluent.bmp" />
     <EmbeddedResource Include="Controls\NavigationStore.bmp" />
     <EmbeddedResource Include="Controls\NotifyIcon.bmp" />
     <EmbeddedResource Include="Controls\NumberBox.bmp" />
