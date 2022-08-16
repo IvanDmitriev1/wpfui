@@ -27,7 +27,6 @@ public class ButtonsViewModel : ObservableObject
         var currentTheme = testGetThemeService.GetSystemTheme();
     }
 
-
     private void OnShowMore(string parameter)
     {
         _navigationService.NavigateTo("/input");
